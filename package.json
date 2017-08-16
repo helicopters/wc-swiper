@@ -1,0 +1,18 @@
+{
+  "name": "wc-vue-templates",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node build/server.js",
+    "build": "node build/build.js",
+    "test": "node build/build-test.js",
+    "pre": "node build/build-pre.js",
+    "scp": "node build/build-scp.js"
+  },
+  "author": "linfeng123",
+  "license": "MIT",
+  "devDependencies": {
+    "axios": "^0.16.2"
+  }
+}
