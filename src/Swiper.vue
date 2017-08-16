@@ -121,7 +121,7 @@
 
 			var config = {
 				duration: 500,
-				interval: 2000
+				interval: 1500
 			}
 
 			// 属性操作函数
@@ -133,8 +133,8 @@
 				el.style.transform = 'translateX(' + v + 'px)';
 			}
 
-			function transformDuration (el, v) {
-				el.style.transformDuration = v + 'ms';
+			function transitionDuration (el, v) {
+				el.style.transitionDuration = v + 'ms';
 			}
 
 
@@ -168,6 +168,7 @@
 			function initLayout () {
 				slides.forEach(function(slide, index) {
 					translateX (slide, - swiperWidth);
+					transitionDuration(slide, 0);
 				});
 			}
 
@@ -185,6 +186,23 @@
 				
 				translateX(slides[curSlide], 0);
 				translateX(slides[next(curSlide)], swiperWidth);
+
+
+
+
+			}
+
+
+			function transition () {
+				// 为 layout 加上transition 效果
+				// 规则
+				// 1 当前的 仅仅当前的 slide 以及上一个 slide 拥有 transition 效果
+
+				// 为什么是上一个, 因为重新布局的时候, 会先修改 curSlide
+				transitionDuration(slides[curSlide], config.duration);
+				transitionDuration(slides[prev(curSlide)], config.duration);
+
+
 			}
 
 
@@ -194,6 +212,7 @@
 				// 必须要先初始化. 
 				initLayout();
 				layout();
+				transition(); // 加上动画效果
 			}
 
 
@@ -207,7 +226,7 @@
 
 			setInterval(function(){
 				relayout();
-			}, 1000)
+			}, config.interval)
 
 
 
