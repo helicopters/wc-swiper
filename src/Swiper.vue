@@ -92,268 +92,137 @@
 	export default {
 		mounted () {
 
-
-			let swiper = document.querySelector('.swiper-box');
-			let slides = toArray(swiper.children);
-
-			function toArray(value) {
-				return Array.prototype.slice.call(value);
+			// array-like -> array
+			function toArray(arraylike) {
+				return Array.prototype.slice.call(arraylike);
 			}
 
-			let times = 0;
+			// 获取 swiper 容器
+			function getSwiper(selector) {
+				return document.querySelector(selector);
+			}
 
-			let lock = false;
+			// 获取 slides, 返回一个 array
+			function getSlides (swiper) {
+				return toArray(swiper.children);
+			}
 
+			// 获取单个slide的宽度
+			function getSwiperWidth (swiper) {
+				return document.body.clientWidth;
+			}
 
-			function change () {
+			// 定义变量
+			var swiper = getSwiper('.swiper-box');
+			var slides = getSlides(swiper);
+			var swiperWidth = getSwiperWidth(swiper);
+			var slideNumber = slides.length; // 对应当前 slide 的索引
+			var curSlide = 0;
 
+			var config = {
+				duration: 500,
+				interval: 2000
+			}
 
+			// 属性操作函数
+			function left (el, v) {
+				el.style.left = v + 'px';
+			}
 
+			function translateX (el, v) {
+				el.style.transform = 'translateX(' + v + 'px)';
+			}
 
-				// console.log(times)
-				// 初始化之后的结果就是这样
-				slides.forEach((ele, index) => {
-					ele.style.left = -375*index + 'px';
-					ele.style.transform = 'translateX(-375px)'
-					ele.style.transitionDuration = '0ms'
-					ele.transitionend = null;
-
-
-
-
-					// 当前要动的元素
-					if (index == times) {
-						ele.style.transform = 'translateX(0)'
-						ele.style.transitionDuration = '1000ms'
-						
-					}
-					if ((index == times + 1)) {
-						ele.style.transform = 'translateX(375px)'
-
-						// ele.style.transitionDuration = '300ms'
-					}
-					if ((times + 1) == 3) {
-						// console.log('我再低三个')
-						slides[0].style.transform = 'translateX(375px)'
-						// ele.style.transitionDuration = '1000ms'
-					}
-
-
-
-					if (times == 0) {
-						slides[2].style.transitionDuration = '1000ms'
-					}
-
-					if (times >=1) {
-						slides[times-1].style.transitionDuration = '1000ms'
-					}
-					
+			function transformDuration (el, v) {
+				el.style.transformDuration = v + 'ms';
+			}
 
 
-					// }
-				});	
+			// 根据 slideNumber 实现的进制运算.
+			// 规则: if curSlide + 1 = slideNumber return 0
+			// if curSlide - 1 = -1, return slideNumber - 1
+
+			function next (v) {
+				// var t;
+				return (v + 1 == slideNumber) ? 0 : (v + 1);
+			}
+
+			function prev (v) {
+				return (v - 1 == -1) ? (slideNumber - 1) : (v - 1);
+			}
+
+
+
+			// 1 对所有的 slide 设置 left 属性
+			function initLeft () {
+				// 1 设置 left 属性
+				// 公式: - index(slide) * swiperWidth
+				// 2 设置 translateX 属性
+				slides.forEach(function(slide, index) {
+					left (slide, -(index * swiperWidth));
+					translateX (slide, - swiperWidth);
+				});
+			}
+
+			// 和上面的分开写
+			function initLayout () {
+				slides.forEach(function(slide, index) {
+					translateX (slide, - swiperWidth);
+				});
+			}
+
+
+			
+
+			// 对 slide 进行布局
+			// 需要的参数有 curSlide
+
+			function layout () {
+				// 规则很明确
+				// 0 让所有的 slide 先 translate 到一起去.
+				// 1 curSlide 对应的 slide translate = 0
+				// 2 curSlide 的下一个 slide translate = swiperWidth
 				
-
-
-				times++;
-				if (times == 3) {
-					times = 0;
-				}	
-
-
-
-				lock=false;
-
-
-
+				translateX(slides[curSlide], 0);
+				translateX(slides[next(curSlide)], swiperWidth);
 			}
 
 
-			swiper.addEventListener('transitionend', (e)=>{
-				if (!lock) {
+			// 重新布局
+			function relayout () {
+				curSlide = next(curSlide);
+				// 必须要先初始化. 
+				initLayout();
+				layout();
+			}
 
-					let v = times - 1;
-					if (v < 0) {
-						v = 2;
-					}
-					toArray(document.querySelectorAll('.item')).forEach((el)=>{
-						el.classList.remove('active')
-					})
-					document.querySelectorAll('.item')[v].classList.add('active')
 
 
-					console.log('一次', e.target.getAttribute('class'), v)
-					lock = true;
-					setTimeout(()=>{
-						change();
-					}, 2000)					
-				}
 
 
+			initLeft();
+			initLayout();
+			layout();
 
-			}, false)
 
+			setInterval(function(){
+				relayout();
+			}, 1000)
 
 
-		
-			change();
 
 
 
-			// setTimeout(()=>{
-			// 	change();
-			// },2000)
 
 
-			slides.forEach((el, index) =>{
 
 
 
-				let startX = 0;
-				let distance;
 
-				el.addEventListener('touchstart', (e) =>{
-					let touch = e.targetTouches[0];
-					console.log(touch.pageX)
 
-					startX = touch.pageX; // 当前滑动的距离
 
+		}// end mounted
 
-					// 需要让所有的元素的 
-
-
-					slides.forEach((ele) =>{
-						el.style.transitionDuration = '0ms'
-					})
-
-
-
-
-
-				}, false)
-
-
-
-
-
-/*
-相对于当前的 translateX 值得到的, 所以还是要考虑元素当前的 translate X 值, 
-这个 translate 值怎么拿到呢, 
-
-或者不需要考虑这个问题, 我们只要判断当前用户是在往左边滑动, 并且滑动的距离超过一定的值
-就直接触发滑动效果, 
-
-直接在 touchstart 的时候, 准备好左右的两个点, 
-
-*/
-
-
-
-
-				el.addEventListener('touchmove', (e) =>{
-					let touch = e.targetTouches[0];
-					// console.log(touch.pageX)
-
-					let x = touch.pageX; // 当前滑动的距离
-
-					distance = x - startX;
-					// 设置当前的 slide 的位置, 需要在 touchstart 开始就进行. 
-					console.log(distance)
-
-					el.style.transform = 'translateX(' + distance + 'px)';
-
-
-					slides[index + 1].style.transform = 'translateX(' + (375+distance) + 'px)'
-
-
-
-					// if (Math.abs(distance) > 100) {
-					// 	change();
-					// }
-
-
-
-
-
-
-
-
-				}, false)
-
-
-
-
-			el.addEventListener('touchend', (e) =>{
-
-
-				if (Math.abs(distance) > 100) {
-					console.log('我应该移动的');
-
-
-
-					if (distance > 0) {
-						// 向右边滑动的
-						times--;
-						change();
-
-					} else {
-						// 是向左边滑动的
-						times++;
-						change();
-					}
-
-
-
-
-
-
-
-
-				}
-
-
-
-
-
-
-
-
-
-
-
-			}, false)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-			})
-
-
-
-
-
-
-
-
-
-
-
-		}
-
-	}
+	} // end export
 
 </script>
