@@ -118,6 +118,7 @@
 			var swiperWidth = getSwiperWidth(swiper);
 			var slideNumber = slides.length; // 对应当前 slide 的索引
 			var curSlide = 0;
+			var lock = false;  // 防止 transitionend 事件执行多次加的锁
 
 			var config = {
 				duration: 500,
@@ -215,6 +216,29 @@
 				transition(); // 加上动画效果
 			}
 
+			// 在 swiper 上面绑定事件, 而不是在 slide 上面绑定 transitionend
+			// 因为这样方便, 又不会重复绑定事件
+			// 但是会触发多次, 没事, 我加个锁
+
+			function bindTransitionEndToSwiper () {
+				swiper.addEventListener('transitionend', function(e) {
+					
+					if (lock) {
+						return;
+					}
+					lock = true;
+
+					console.log('transition 执行完毕, 当前显示的为: slide', curSlide);
+					// 执行操作
+					setTimeout(function(){
+						relayout();
+						lock = false;
+					}, config.interval);
+
+
+				}, false);
+			}
+
 
 
 
@@ -222,11 +246,15 @@
 			initLeft();
 			initLayout();
 			layout();
+			bindTransitionEndToSwiper();
 
-
-			setInterval(function(){
+			setTimeout(function(){
 				relayout();
-			}, config.interval)
+			}, config.interval);
+
+			// setInterval(function(){
+			// 	relayout();
+			// }, config.interval)
 
 
 
