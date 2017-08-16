@@ -1,4 +1,7 @@
 <style>
+	body {
+		padding-top: 50px;
+	}
 	.swiper-box {
 		height: 300px;
 		width: 1125px;
@@ -16,6 +19,9 @@
 		text-align: center;
 	
 
+		transform-origin: 0px 0px 0px;
+    	opacity: 1;
+    	transform: scale(1, 1);
 
 		height: 100%;
 		display: inline-block;
@@ -123,10 +129,12 @@
 			var isTouching = false;
 
 			var config = {
-				duration: 500,
-				interval: 1500,
-				max: 150
+				duration: 300,
+				interval: 500,
+				max: 100,
+				
 			}
+			var userDuration = 300;
 
 			// 属性操作函数
 			function left (el, v) {
@@ -327,7 +335,7 @@
 			}
 
 			function m (e) {
-
+				// pos.init = 0;
 				// 同样初始化一些值
 				pos.move = e.targetTouches[0].pageX;
 				pos.distance = pos.start - pos.move;
@@ -347,13 +355,13 @@
 
 
 
-				if (pos.distance > 0) {
-					// 用户在往左边滑动, 让右边的 slide 跟随
-					// slides[next(curSlide)]
-					translateX(slides[next(curSlide)], pos.init + swiperWidth - pos.distance);
-				} else {
-					// 向右边滑动, 让左边的 slide 跟随
-				}
+				// if (pos.distance > 0) {
+				// 	// 用户在往左边滑动, 让右边的 slide 跟随
+				// 	// slides[next(curSlide)]
+				// 	translateX(slides[next(curSlide)], pos.init + swiperWidth - pos.distance);
+				// } else {
+				// 	// 向右边滑动, 让左边的 slide 跟随
+				// }
 
 
 			}
@@ -392,14 +400,14 @@
 						translateX(slides[prev(curSlide)], -swiperWidth);
 						translateX(slides[next(curSlide)], swiperWidth);
 
-						transitionDuration(slides[curSlide], 350);
-						transitionDuration(slides[prev(curSlide)], 350)
+						transitionDuration(slides[curSlide], userDuration);
+						transitionDuration(slides[prev(curSlide)], userDuration)
 
 
 					} else {
 						curSlide = prev(curSlide);
 
-						
+
 						translateX(slides[curSlide], 0);
 						// translateX(slides[prev(curSlide)], -swiperWidth);
 						translateX(slides[next(curSlide)], swiperWidth);
@@ -407,15 +415,15 @@
 
 
 
-						transitionDuration(slides[curSlide], 350);
-						transitionDuration(slides[next(curSlide)], 350)
+						transitionDuration(slides[curSlide], userDuration);
+						transitionDuration(slides[next(curSlide)], userDuration)
 
 					}
 
 
 					// transition();
 					// slides.forEach(function(slide, index) {
-					// 	transitionDuration(slide, 350);
+					// 	transitionDuration(slide, userDuration);
 					// });
 
 					// sli
@@ -426,14 +434,14 @@
 					// 如果移动距离比较小, 要恢复原状. 
 
 					translateX(slides[curSlide], 0);
-					transitionDuration(slides[curSlide], 350)
+					transitionDuration(slides[curSlide], userDuration)
 
 					if (direction == 'to-left') {
 						translateX(slides[next(curSlide)], swiperWidth);
-						transitionDuration(slides[next(curSlide)], 350)
+						transitionDuration(slides[next(curSlide)], userDuration)
 					} else {
 						translateX(slides[prev(curSlide)], -swiperWidth);
-						transitionDuration(slides[prev(curSlide)], 350)
+						transitionDuration(slides[prev(curSlide)], userDuration)
 					}
 
 					// 因为加上了 transition, 所以会触发 transitionend 事件,
@@ -449,7 +457,7 @@
 				clearTimeout(dirtyTimer);
 				dirtyTimer = setTimeout(function() {
 					isTouching = false;
-				}, 351);
+				}, userDuration);
 
 
 
@@ -457,6 +465,9 @@
 
 
 
+			swiper.addEventListener('touchstart', function(e) {
+				e.preventDefault();
+			}, false);
 
 
 

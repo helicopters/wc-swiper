@@ -1,5 +1,5 @@
 import 'wc-css/reset.css'
-
+import 'wc-css/base.css'
 
 import Vue from 'vue'
 
