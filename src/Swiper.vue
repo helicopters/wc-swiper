@@ -17,15 +17,29 @@
 		/*width: 100%;*/
 		font-size: 50px;
 		text-align: center;
-	
+		/*-webkit-overflow-scrolling: touch;*/
+		/*user-select:none;*/
 
 		transform-origin: 0px 0px 0px;
-    	opacity: 1;
+/*    	opacity: 1;
     	transform: scale(1, 1);
-
+*/
 		height: 100%;
 		display: inline-block;
 		width: 375px;
+
+
+/*	-webkit-backface-visibility: hidden;
+	-moz-backface-visibility: hidden;
+	-ms-backface-visibility: hidden;
+	backface-visibility: hidden;
+	-webkit-perspective: 1000;
+	-moz-perspective: 1000;
+	-ms-perspective: 1000;
+	perspective: 1000;
+*/
+
+		
 		
 		/*transition: all 3s ease-in 2s;*/
 	}
@@ -129,8 +143,8 @@
 			var isTouching = false;
 
 			var config = {
-				duration: 2000,
-				interval: 2000,
+				duration: 1000,
+				interval: 1000,
 				max: 100,
 				
 			}
@@ -164,8 +178,8 @@
 
 			// 用 translate3d 来启动硬件加速?
 			function translateX (el, v) {
-				el.style.transform = 'translate3d(' + v + 'px, 0px, 0px)';
-				// el.style.transform = 'translateX(' + v + 'px)';
+				// el.style.transform = 'translate3d(' + v + 'px, 0px, 0px)';
+				el.style.transform = 'translateX(' + v + 'px)';
 			}
 
 			function transitionDuration (el, v) {
@@ -203,7 +217,7 @@
 			function initLayout () {
 				slides.forEach(function(slide, index) {
 					translateX (slide, - swiperWidth);
-					transitionDuration(slide, 0);
+					// transitionDuration(slide, 0);
 				});
 			}
 
@@ -224,7 +238,9 @@
 				// 0 让所有的 slide 先 translate 到一起去.
 				// 1 curSlide 对应的 slide translate = 0
 				// 2 curSlide 的下一个 slide translate = swiperWidth
-				
+
+
+				// translateX(slides[prev(curSlide)], -swiperWidth);
 				translateX(slides[curSlide], 0);
 				translateX(slides[next(curSlide)], swiperWidth);
 			}
@@ -299,7 +315,7 @@
 			initLayout();
 			layout();
 			bindTransitionEndToSwiper();
-			bindTouchToSlides();
+			
 
 			initTimer = setTimeout(function(){
 
@@ -339,13 +355,7 @@
 
 			*/	
 
-			function bindTouchToSlides () {
-				slides.forEach(function(el) {
-					el.addEventListener('touchstart', s, false);
-					el.addEventListener('touchmove', m, false);
-					el.addEventListener('touchend', e, false);
-				});
-			}
+
 
 /*
 用户滑动的时机有两种
@@ -635,10 +645,22 @@
 			}
 
 
-			// 阻止默认事件, fix bug: 滑动的时候, 整个页面也会跟着动. 
-			swiper.addEventListener('touchstart', function(e) {
-				e.preventDefault();
-			}, false);
+			// bindTouchToSlides();
+
+
+			// function bindTouchToSlides () {
+			// 	slides.forEach(function(el) {
+			// 		el.addEventListener('touchstart', s, false);
+			// 		el.addEventListener('touchmove', m, false);
+			// 		el.addEventListener('touchend', e, false);
+			// 	});
+			// }
+
+
+			// swiper.addEventListener('touchstart', function(e) {
+			// 	e.preventDefault();
+			// 	e.stopPropagation();
+			// }, false);
 
 
 

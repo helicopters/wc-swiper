@@ -17,7 +17,7 @@ const app = express();
 
 // 80 端口是 http 协议的专用端口, 专用端口！
 // const port = parseInt(Math.random() * 10000) + 5000;
-const port = 9999;
+const port = 9900;
 // const  port = '80';
 // 设置 webpackDevMiddleware
 const devMiddleware = webpackDevMiddleware(compiler, {
