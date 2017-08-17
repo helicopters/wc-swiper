@@ -136,6 +136,22 @@
 			}
 			var userDuration = 300;
 
+			var pos = {
+				init: 0,
+				start: 0,
+				end: 0,
+				move: 0,
+				distance: 0
+			}
+
+			var direction = '';
+			// var dirtyTimer = null;
+			var slideTimer = null;
+			var userTimer = null;
+
+
+
+
 			// 属性操作函数
 			function left (el, v) {
 				el.style.left = v + 'px';
@@ -236,13 +252,13 @@
 
 			function bindTransitionEndToSwiper () {
 				swiper.addEventListener('transitionend', function(e) {
-					
+					// console.log('触发')
 					if (lock) {
 						return;
 					}
 					lock = true;
 
-					console.log('transition 执行完毕, 当前显示的为: slide', curSlide);
+					// console.log('transition 执行完毕, 当前显示的为: slide', curSlide);
 					// 执行操作
 					clearTimeout(slideTimer);
 					slideTimer = setTimeout(function(){
@@ -276,39 +292,30 @@
 
 			// 为 slide 绑定事件, 以支持用户手动滑动.
 
-/*
-用户滑动行为的考虑
-1. 用户滑动和我们的自动滑动是矛盾的, 我们做到: 
-用户点击的时候, 停止滑动, 假设用户一直按着不放, 就一直不滑动
-用户松开的时候, 重新计时, 重新开始滑动
+			/*
+			用户滑动行为的考虑
+			1. 用户滑动和我们的自动滑动是矛盾的, 我们做到: 
+			用户点击的时候, 停止滑动, 假设用户一直按着不放, 就一直不滑动
+			用户松开的时候, 重新计时, 重新开始滑动
 
-那么如何实现停止滑动和触发滑动?
-清除定时器, 还是设置一个变量? 先设置成变量模式吧. 
+			那么如何实现停止滑动和触发滑动?
+			清除定时器, 还是设置一个变量? 先设置成变量模式吧. 
 
-2. 同时要做到, 用户左边滑动, 右边滑动, 我们能够让 slide 保持跟着滑动的效果. 
+			2. 同时要做到, 用户左边滑动, 右边滑动, 我们能够让 slide 保持跟着滑动的效果. 
 
-要做到, 记录用户点击的位置, 当前 slide 的 translate 值, 以及用户移动的位置, 
-从这三者得到最终的 slide 应该 从什么地方开始移动多少距离的问题.
+			要做到, 记录用户点击的位置, 当前 slide 的 translate 值, 以及用户移动的位置, 
+			从这三者得到最终的 slide 应该 从什么地方开始移动多少距离的问题.
 
-3. 然后在用户松开之后, 我们要拿到最终移动的距离, 并且和设定的阀值做对比:
-  是否已经达到了需要响应用户行为的情况.
+			3. 然后在用户松开之后, 我们要拿到最终移动的距离, 并且和设定的阀值做对比:
+			  是否已经达到了需要响应用户行为的情况.
 
-
-*/	
-
-			var pos = {
-				init: 0,
-				start: 0,
-				end: 0,
-				move: 0,
-				distance: 0
-			}
-
-			var direction = '';
-			var dirtyTimer = null;
-			var slideTimer = null;
+			我们现在使用的是定时器的方式, 然后又加上了一个变量来判断, 我觉得这种方式不好, 
+			是否可以有优化空间呢?
 
 
+
+
+			*/	
 
 			function bindTouchToSlides () {
 				slides.forEach(function(el) {
@@ -318,14 +325,26 @@
 				});
 			}
 
+/*
+用户滑动的时机有两种
+1. 自动滑动还没有开始的时候
+2. 自动滑动已经开始了
+
+当1 的时候, 我们需要让元素直接干掉, 
+
+我希望能集中起来, 不要凌乱的放在各个地方, 有一个地方集中触发, 它可以接受指令
+实现暂停, 重置 等功能. 
 
 
+
+
+
+
+*/
 
 			function s (e) {
 				// 禁止自动滑动
 				isTouching = true;
-				// clearTimeout(initTimer);
-				// clearTimeout(slideTimer);
 				console.log('user touching, ban auto');
 
 				// 初始化一些值
@@ -335,7 +354,7 @@
 			}
 
 			function m (e) {
-				// pos.init = 0;
+
 				// 同样初始化一些值
 				pos.move = e.targetTouches[0].pageX;
 				pos.distance = pos.start - pos.move;
@@ -353,20 +372,11 @@
 				translateX(slides[next(curSlide)], pos.init + swiperWidth - pos.distance);
 				translateX(slides[prev(curSlide)], pos.init - swiperWidth - pos.distance);
 
-
-
-				// if (pos.distance > 0) {
-				// 	// 用户在往左边滑动, 让右边的 slide 跟随
-				// 	// slides[next(curSlide)]
-				// 	translateX(slides[next(curSlide)], pos.init + swiperWidth - pos.distance);
-				// } else {
-				// 	// 向右边滑动, 让左边的 slide 跟随
-				// }
-
-
 			}
 
 			function e (e) {
+				// console.log('释放')
+				isTouching = false;
 
 				pos.end = e.changedTouches[0].pageX;
 
@@ -374,6 +384,8 @@
 
 				if (pos.distance > 0) {
 					direction = 'to-left';
+				} else if (pos.distance == 0) {
+					direction = 'to'
 				}
 
 				// 如果移动距离最终大于了 150px, 那么就要响应用户的行为, 向左或者右边滑动一个距离
@@ -381,10 +393,6 @@
 
 					initLayout();
 					initTransition();
-					// slides.forEach()
-
-				// translateX(slides[curSlide], 0);
-				// translateX(slides[next(curSlide)], swiperWidth);
 
 					if (direction == 'to-left') {
 						// 这里不能使用和默认 slide 相同的时间, 而是我们自己定义一个 transition 
@@ -393,8 +401,6 @@
 						curSlide = next(curSlide);
 						// 必须要先初始化. 
 
-						// slides[curSlide].
-						// layout();
 
 						translateX(slides[curSlide], 0);
 						translateX(slides[prev(curSlide)], -swiperWidth);
@@ -412,59 +418,52 @@
 						// translateX(slides[prev(curSlide)], -swiperWidth);
 						translateX(slides[next(curSlide)], swiperWidth);
 
-
-
-
 						transitionDuration(slides[curSlide], userDuration);
 						transitionDuration(slides[next(curSlide)], userDuration)
 
 					}
 
 
-					// transition();
-					// slides.forEach(function(slide, index) {
-					// 	transitionDuration(slide, userDuration);
-					// });
-
-					// sli
-
-
-
 				} else {
 					// 如果移动距离比较小, 要恢复原状. 
-
+					console.log('恢复原状', pos.distance)
 					translateX(slides[curSlide], 0);
 					transitionDuration(slides[curSlide], userDuration)
 
 					if (direction == 'to-left') {
 						translateX(slides[next(curSlide)], swiperWidth);
 						transitionDuration(slides[next(curSlide)], userDuration)
+					} else if (direction == 'to'){
+						// console.log(123)
+						// 此时移动距离为0, 也没有触发 transition效果, 所以我们
+						// 单独拎出来, 然后手动触发
+						clearTimeout(userTimer);
+						userTimer = setTimeout(function(){
+							// co
+							if (!isTouching) {
+								relayout();
+							}
+						}, config.interval);
+
+
+
+
 					} else {
+						console.log('right')
 						translateX(slides[prev(curSlide)], -swiperWidth);
-						transitionDuration(slides[prev(curSlide)], userDuration)
+						transitionDuration(slides[prev(curSlide)], userDuration);
 					}
-
-					// 因为加上了 transition, 所以会触发 transitionend 事件,
-					// 所以就不需要我们自己手动触发了. 
-					
-
-					// 这里有一个问题, 我们必须要在当前 transitionend 
-
-
 				}
 
-				// // isTouching = false;
-				clearTimeout(dirtyTimer);
-				dirtyTimer = setTimeout(function() {
-					isTouching = false;
-				}, userDuration);
-
-
+				// clearTimeout(dirtyTimer);
+				// dirtyTimer = setTimeout(function() {
+				// 	isTouching = false;
+				// }, userDuration);
 
 			}
 
 
-
+			// 阻止默认事件, fix bug: 滑动的时候, 整个页面也会跟着动. 
 			swiper.addEventListener('touchstart', function(e) {
 				e.preventDefault();
 			}, false);
