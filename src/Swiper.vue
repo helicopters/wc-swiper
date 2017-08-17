@@ -129,8 +129,8 @@
 			var isTouching = false;
 
 			var config = {
-				duration: 300,
-				interval: 1000,
+				duration: 2000,
+				interval: 2000,
 				max: 100,
 				
 			}
@@ -165,6 +165,7 @@
 			// 用 translate3d 来启动硬件加速?
 			function translateX (el, v) {
 				el.style.transform = 'translate3d(' + v + 'px, 0px, 0px)';
+				// el.style.transform = 'translateX(' + v + 'px)';
 			}
 
 			function transitionDuration (el, v) {
@@ -238,6 +239,8 @@
 				transitionDuration(slides[curSlide], config.duration);
 				transitionDuration(slides[prev(curSlide)], config.duration);
 
+				// transitionDuration(slides[next(curSlide)], config.duration);
+
 
 			}
 
@@ -301,7 +304,7 @@
 			initTimer = setTimeout(function(){
 
 				console.log('我是 initTimer, 我将会被清除, 接下来会重新布局, 往下滑动')
-				clearTimeout(initTimer);
+				// clearTimeout(initTimer);
 				// co
 				// if (!isTouching) {
 					relayout();
@@ -390,19 +393,26 @@
 2. 你按着不动, 过一会再动, 它依旧滚动
 3. 你按着, 并且来回动. 它就会响应你的.
 
+但是这里有问题, 在 move 会被重复触发, 我们只要触发一次即可, 不需要重复触发. 
 
+有个bug, 现在如果用户一直按着不放的话, 就会有问题, 表现为 需要进来的那个会一直直接展示
+这个和我们的流程有关系吗. 
 
+因为我的 touch 导致的问题, 我按着不放导致了 slide 出现问题. 
 
+我在想为什么, 为什么我只要按着, 就会触发 touch 事件, 然后就会导致, 
 
-
+重新布局的时候, 下一个子元素是存在的, 我的意思是说, 但是不显示, 是不是
 
 
 */
 			
 			var _touchstart;
 			var _touchmove;
+			var _interval;
 
-
+			var _once = true;
+			var response = false;
 
 
 			function s (e) {
@@ -414,13 +424,7 @@
 
 				_touchstart = new Date().getTime();
 
-				if (status == 'start') {
-					clearTimeout(initTimer);
-				}
 
-				if (status == 'slide') {
-					clearTimeout(slideTimer);
-				}
 
 
 				// console.log('user touching, ban auto');
@@ -433,23 +437,75 @@
 
 			function m (e) {
 
-				_touchmove = new Date().getTime();
-				// 同样初始化一些值
-				pos.move = e.targetTouches[0].pageX;
-				pos.distance = pos.start - pos.move;
+				// 第一次触发. 
+				if (_once) {
 
-				// 让 slide 跟随
-				// 首先去掉 transition 效果
-				initTransition();
-				// 然后让当前的 slide 跟随
-				translateX(slides[curSlide], pos.init - pos.distance);
+					_once = false;
 
-				// 再根据 distance 的大小, 来确定是左边还是右边的 slide 跟随
-				// 上面那句话是错的, 不应该这么做, 因为任意一边的 slide 都可能存在遇见
-				// distance 大于, 小于 0 的情况, 你想啊, 用户左右滑动.
+					_touchmove = new Date().getTime();
 
-				translateX(slides[next(curSlide)], pos.init + swiperWidth - pos.distance);
-				translateX(slides[prev(curSlide)], pos.init - swiperWidth - pos.distance);
+					// console.log()
+					_interval = _touchmove - _touchstart;
+
+					console.log('从touchstat, 到 move', _interval)
+					if (_interval > 400) {
+						// 如果间隔大于 400ms, 就不要响应用户的行为了
+						// 不做响应
+						return;
+					} else {
+						console.log('用户在  slide, 我们响应')
+
+						response = true;
+
+
+
+
+					}
+
+				}
+
+
+				if (response) {
+
+
+						if (status == 'start') {
+							clearTimeout(initTimer);
+						}
+
+						if (status == 'slide') {
+							clearTimeout(slideTimer);
+						}
+
+						// 同样初始化一些值
+						pos.move = e.targetTouches[0].pageX;
+						pos.distance = pos.start - pos.move;
+
+						// 让 slide 跟随
+						// 首先去掉 transition 效果
+						initTransition();
+						// 然后让当前的 slide 跟随
+						translateX(slides[curSlide], pos.init - pos.distance);
+
+						// 再根据 distance 的大小, 来确定是左边还是右边的 slide 跟随
+						// 上面那句话是错的, 不应该这么做, 因为任意一边的 slide 都可能存在遇见
+						// distance 大于, 小于 0 的情况, 你想啊, 用户左右滑动.
+
+						translateX(slides[next(curSlide)], pos.init + swiperWidth - pos.distance);
+						translateX(slides[prev(curSlide)], pos.init - swiperWidth - pos.distance);
+
+
+
+
+
+
+				}
+
+
+
+
+
+
+
 
 			}
 
@@ -462,28 +518,37 @@
 				// 	console.log('重新触发')
 				// 	relayout();
 				// }, config.interval);
+				// alert('not ')
 
 				console.log('用户松开了, 现在我们会响应用户行为')
 				console.log('但是此时滑动结束, 不会让slide 继续')
 				console.log('此时的状态是', status);
 
-				if (status == 'start') {
-					initTimer = setTimeout(function(){
-						clearTimeout(initTimer);
-						relayout();
-					}, config.interval);
+				// 只有用户动了, 我们采取响应
+				if (response) {	
+					console.log('-------用户动了')
+
+					if (status == 'start') {
+						initTimer = setTimeout(function(){
+							clearTimeout(initTimer);
+							relayout();
+						}, config.interval);
+					}
+
+					if (status == 'slide') {
+
+						console.log('开始滚动一次')
+						slideTimer = setTimeout(function(){
+							clearTimeout(slideTimer);
+							relayout();
+							lock = false;
+						}, config.interval)
+
+					}
+
 				}
 
-				if (status == 'slide') {
 
-					console.log('开始滚动一次')
-					slideTimer = setTimeout(function(){
-						clearTimeout(slideTimer);
-						relayout();
-						lock = false;
-					}, config.interval)
-
-				}
 
 
 
