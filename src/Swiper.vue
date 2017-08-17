@@ -130,10 +130,11 @@
 
 			var config = {
 				duration: 300,
-				interval: 500,
+				interval: 1000,
 				max: 100,
 				
 			}
+			// 响应用户行为的时候的 transition duration
 			var userDuration = 300;
 
 			var pos = {
@@ -147,7 +148,11 @@
 			var direction = '';
 			// var dirtyTimer = null;
 			var slideTimer = null;
-			var userTimer = null;
+			// var userTimer = null;
+			var initTimer = null;
+			// var timer = null;
+
+			var status = 'start';
 
 
 
@@ -157,8 +162,9 @@
 				el.style.left = v + 'px';
 			}
 
+			// 用 translate3d 来启动硬件加速?
 			function translateX (el, v) {
-				el.style.transform = 'translateX(' + v + 'px)';
+				el.style.transform = 'translate3d(' + v + 'px, 0px, 0px)';
 			}
 
 			function transitionDuration (el, v) {
@@ -252,21 +258,31 @@
 
 			function bindTransitionEndToSwiper () {
 				swiper.addEventListener('transitionend', function(e) {
-					// console.log('触发')
+					console.log('lock',lock)
 					if (lock) {
 						return;
 					}
 					lock = true;
 
-					// console.log('transition 执行完毕, 当前显示的为: slide', curSlide);
-					// 执行操作
-					clearTimeout(slideTimer);
+					status = 'slide';
+
+					console.log('我是滑动之后的 timer, 现在我将要重新开始计时')
+					// console.log('此时此刻的 timer', slideTimer)
 					slideTimer = setTimeout(function(){
 						lock = false;  // 解锁
-						if (!isTouching) {
-							relayout();
-						}
+						// 清除定时器
+						clearTimeout(slideTimer);
+						console.log('清除了定时器')
+						// if (!isTouching) {
+						relayout();
+						// }
 					}, config.interval);
+
+
+
+
+
+
 
 
 				}, false);
@@ -282,11 +298,14 @@
 			bindTransitionEndToSwiper();
 			bindTouchToSlides();
 
-			setTimeout(function(){
+			initTimer = setTimeout(function(){
+
+				console.log('我是 initTimer, 我将会被清除, 接下来会重新布局, 往下滑动')
+				clearTimeout(initTimer);
 				// co
-				if (!isTouching) {
+				// if (!isTouching) {
 					relayout();
-				}
+				// }
 			}, config.interval);
 
 
@@ -335,17 +354,76 @@
 我希望能集中起来, 不要凌乱的放在各个地方, 有一个地方集中触发, 它可以接受指令
 实现暂停, 重置 等功能. 
 
+我们现在的触发有几种情况
+1. 初始化之后, 在一定时间之后, 自动触发
+2. 每一次滚动之后一定时间之后, 自动触发
+3. 用户手动滑动之后, 一定时间之后自动触发
+
+这里的冲突主要是用户行为和 autoplay 的冲突, 我们需要实现:
+1. 用户行为开始, 停止 autoplay
+2. 用户行为结束, 重新开始计时
+
+情景1:
+1. 刚开始还没有开始执行的时候, 用户点击, 此时清除计时器. 生效. 
+2. 用户此时松开, 我们需要重新开始计时. 
+
+情景2:
+已经开始滚动之后, 用户再点击, 此时, 需要清除 滚动的定时器, 而不是初始化的定时器. 
+
+我们制定状态, pause, play, stop, 三种状态. 
+
+其实不加上 user behavior 的话, 什么问题都没有, 什么事情都没有. 
+
+关键是用户行为的话, 我们能不能拆开, 比如说一旦有用户行为了, 直接清除掉之前的所有操作
+如果用定时器, 会重复导致定时, 吗的, 真难搞.
+
+我们加一个状态值判断, 点击的时候, 将状态变成 pause, 然后
+
+还是要分, 分成 start, sliding, 
+
+
+知乎日报是, 你点击上面, 只要不动, 就不会清除, 它还是会动, 只有你 move 之后
+我感觉它应该做了处理, 什么处理, 判断用户是否在移动的处理, 
+
+比如:
+1. 你按着不动, 它依旧滚动
+2. 你按着不动, 过一会再动, 它依旧滚动
+3. 你按着, 并且来回动. 它就会响应你的.
+
+
+
 
 
 
 
 
 */
+			
+			var _touchstart;
+			var _touchmove;
+
+
+
 
 			function s (e) {
 				// 禁止自动滑动
-				isTouching = true;
-				console.log('user touching, ban auto');
+				// 根据 status 来确定当前应该清除哪一个 timer
+
+				console.log('监听到了用户点击, 目前的状态是' + status)
+				console.log('我会清除一个定时器, 页面现在不会动')
+
+				_touchstart = new Date().getTime();
+
+				if (status == 'start') {
+					clearTimeout(initTimer);
+				}
+
+				if (status == 'slide') {
+					clearTimeout(slideTimer);
+				}
+
+
+				// console.log('user touching, ban auto');
 
 				// 初始化一些值
 				pos.init = slides[curSlide].getBoundingClientRect().left;
@@ -355,6 +433,7 @@
 
 			function m (e) {
 
+				_touchmove = new Date().getTime();
 				// 同样初始化一些值
 				pos.move = e.targetTouches[0].pageX;
 				pos.distance = pos.start - pos.move;
@@ -376,20 +455,59 @@
 
 			function e (e) {
 				// console.log('释放')
-				isTouching = false;
+				// isTouching = false;
+
+				// 重新启动计时
+				// timer = setTimeout(function(){
+				// 	console.log('重新触发')
+				// 	relayout();
+				// }, config.interval);
+
+				console.log('用户松开了, 现在我们会响应用户行为')
+				console.log('但是此时滑动结束, 不会让slide 继续')
+				console.log('此时的状态是', status);
+
+				if (status == 'start') {
+					initTimer = setTimeout(function(){
+						clearTimeout(initTimer);
+						relayout();
+					}, config.interval);
+				}
+
+				if (status == 'slide') {
+
+					console.log('开始滚动一次')
+					slideTimer = setTimeout(function(){
+						clearTimeout(slideTimer);
+						relayout();
+						lock = false;
+					}, config.interval)
+
+				}
+
+
 
 				pos.end = e.changedTouches[0].pageX;
 
 				pos.distance = pos.start - pos.end;
 
+
+				console.log(pos.distance, '移动的距离')
 				if (pos.distance > 0) {
 					direction = 'to-left';
 				} else if (pos.distance == 0) {
 					direction = 'to'
+				} else {
+					direction = 'to-right'
 				}
 
+				console.log(direction)
+
+				console.log(Math.abs(pos.distance),config.max)
 				// 如果移动距离最终大于了 150px, 那么就要响应用户的行为, 向左或者右边滑动一个距离
 				if (Math.abs(pos.distance) > config.max) {
+
+					console.log('用户产生滑动'+ direction)
 
 					initLayout();
 					initTransition();
@@ -411,6 +529,8 @@
 
 
 					} else {
+
+						console.log('我草我我')
 						curSlide = prev(curSlide);
 
 
@@ -425,29 +545,16 @@
 
 
 				} else {
+
+					console.log('用户没有产生滑动')
 					// 如果移动距离比较小, 要恢复原状. 
-					console.log('恢复原状', pos.distance)
+					// console.log('恢复原状', pos.distance)
 					translateX(slides[curSlide], 0);
 					transitionDuration(slides[curSlide], userDuration)
 
 					if (direction == 'to-left') {
 						translateX(slides[next(curSlide)], swiperWidth);
 						transitionDuration(slides[next(curSlide)], userDuration)
-					} else if (direction == 'to'){
-						// console.log(123)
-						// 此时移动距离为0, 也没有触发 transition效果, 所以我们
-						// 单独拎出来, 然后手动触发
-						clearTimeout(userTimer);
-						userTimer = setTimeout(function(){
-							// co
-							if (!isTouching) {
-								relayout();
-							}
-						}, config.interval);
-
-
-
-
 					} else {
 						console.log('right')
 						translateX(slides[prev(curSlide)], -swiperWidth);
