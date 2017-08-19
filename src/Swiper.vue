@@ -36,7 +36,7 @@
 /*    	opacity: 1;
     	transform: scale(1, 1);
 */
-		height: 100%;
+		height: 50%;
 		/*display: inline-block;*/
 		width: 100%;
 		flex-shrink: 0;
@@ -98,7 +98,6 @@
 	</div>
 
 
-
 </template>
 <script>
 
@@ -106,271 +105,74 @@
 	export default {
 		mounted () {
 
-			// array-like -> array
-			function toArray(arraylike) {
-				return Array.prototype.slice.call(arraylike);
-			}
 
-			// 获取 swiper 容器
-			function getSwiper(selector) {
-				return document.querySelector(selector);
-			}
-
-			// // 获取 slides, 返回一个 array
-			function getSlides (swiper) {
-				return toArray(swiper.children);
-			}
-
-			// 获取单个slide的宽度
-			function getSwiperWidth (swiper) {
-				return document.body.clientWidth;
-			}
-
-			// 定义变量
 			var swiper = getSwiper('.swiper-box');
 			var slides = getSlides(swiper);
 			var swiperWidth = getSwiperWidth(swiper);
-			var slidesNumber = slides.length;
-			// var slideNumber = slides.length; // 对应当前 slide 的索引
-
-			var times = 1;
-
+			var slidesNumber;
+			var activeSlide = 0;
 			var config = {
-				interval: 500,
-				duration: 1000
-			}	
-
+			    interval: 300,
+			    duration: 1000
+			}
 			var sliding = false;
-
-			// 用 translate3d 来启动硬件加速?
-			function translateX (el, v) {
-				// el.style.transform = 'translate3d(' + v + 'px, 0px, 0px)';
-				el.style.transform = 'translateX(' + v + 'px)';
-			}
-
-			function transitionDuration (el, v) {
-				el.style.transitionDuration = v + 'ms';
-			}
-
-			function next (v) {
-				// var t;
-				return (v + 1 == slideNumber) ? 0 : (v + 1);
-			}
-
-			function prev (v) {
-				return (v - 1 == -1) ? (slideNumber - 1) : (v - 1);
-			}
-
-
-
-			// 1 先在头尾追加两个元素, 头追加尾, 尾追加头.
-
-			// 1 先获取头尾
-			var head = slides[0].cloneNode(true);
-			var tail = slides[slides.length - 1].cloneNode(true);
-
-			// 2 追加 头
-
-			swiper.insertBefore(tail, slides[0]);
-			// swiper.insertAfter(head, tail);
-			swiper.appendChild(head);
-
-
-			// 再初始化 swiper 的定位
-
-			translateX(swiper, -swiperWidth);
-			times++
-
-			// 然后在指定时间之后开始动起来
-
-			// setTimeout(function(){
-			// 	translateX(swiper, -swiperWidth * times);
-			// 	times++;
-			// 	transitionDuration(swiper, config.duration)
-			// }, config.interval);
-
-			// 然后绑定事件
-
-			swiper.addEventListener('transitionend', function() {
-				sliding = false;
-				// 重新开始计时
-/*
-这里做判断, 如果已经滑动到最后一个元素, 会显示成第一个, 我们之所以加这个是因为我们希望
-在第一个和最后一个左右滑动的时候不会出现空白, 而不是因为 无缝滚动的需求. 
-
-slidesNumber 要默认加个 2, 因为追加的两个元素,
-times 的起点为 1, 最高只能达到 slidesNumber + 2 -1, 也就是  
-
-*/
-				if (slidesNumber + 2 == times) {
-
-					// 先取消动画, 再让元素的值恢复
-					transitionDuration(swiper, 0);
-					times = 1;
-					translateX(swiper, -swiperWidth * times);
-					times++;
-					setTimeout(function(){
-						sliding = true;
-						translateX(swiper, -swiperWidth * times);
-						times++;	
-						transitionDuration(swiper, config.duration)					
-					},config.interval)
-
-				} else {
-
-
-					setTimeout(function(){
-						sliding = true;
-						translateX(swiper, -swiperWidth * times);
-						times++;
-						transitionDuration(swiper, config.duration)
-					}, config.interval);
-
-				}
-
-
-			}, false);
-
-/*
- 到这里基本上无关用户行为的都ok, 现在加上用户行为. 
-
-1. 滚动的时候不响应用户的滑动行为, ok
-
-滑动行为单独拎出来, 不需要和这个玩意耦合在一起. 先使用这样的方式
-
-*/
-
-		function slide (el, handler) {
-
 			var pos = {
-				init: 0, 
-				start: 0,
-				move: 0,
-				end: 0,
-				now: 0
+			    init: 0,
+			    start: 0,
+			    move: 0,
+			    end: 0,
+			    now: 0
+			}
+			var timer = null;
+			var userDuration = 250;
+			var allowUser = true;
+
+			function toArray(arraylike) {
+			    return Array.prototype.slice.call(arraylike);
 			}
 
-
-			// 自定义 slide 事件
-		    var sliding = document.createEvent('event');
-		    var slideLeft = document.createEvent('event');
-		    var slideRight = document.createEvent('event');
-
-		    sliding.initEvent('sliding', true, true);
-		    slideLeft.initEvent('slideLeft', true, true);
-		    slideRight.initEvent('slideRight', true, true);
-
-		    // ele.dispatchEvent(ev);
-
-
-			// 开始触碰的时间戳
-			// var startTime = 0;
-			// var moveTime = 0;
-
-			function s (e) {
-				// 记录元素刚开始的位置, 以及点击开始的位置
-				pos.init = el.getBoundingClientRect().left;
-				pos.start = e.targetTouches[0].pageX;
-				
-			}
-			function m (e) {
-				console.log(e);
-				pos.move = e.targetTouches[0].pageX;
-				pos.now = pos.init - (pos.start - pos.move);
-				console.log(pos.init, pos.now)
-
-				el.slide = pos.now;
-
-				el.dispatchEvent(sliding);
-
-			}
-			function e (e) {
-				// 直接取消滑动事件
-				// el.removeEventListener('touchstart', s, false);
-				// el.removeEventListener('touchmove', m, false);
-				// el.removeEventListener('touchend', e, false)
-
-
-
-				pos.end = e.changedTouches[0].pageX;
-
-
-				el.distance = Math.abs(pos.start - pos.end);
-				// pos.distance = pos.start - pos.end;
-				if (pos.start - pos.end > 0) {
-
-					// el.distance = 
-
-					el.dispatchEvent(slideLeft);
-
-
-				} else if (pos.start - pos.end < 0){
-					el.dispatchEvent(slideRight)
-				}
-
-
-
-
+			function getSwiper(selector) {
+			    return document.querySelector(selector);
 			}
 
-
-
-
-			el.addEventListener('touchstart', s, false);
-			el.addEventListener('touchmove', m, false);
-			el.addEventListener('touchend', e, false);
-		}
-
-
-
-
-		slide (swiper)
-		swiper.addEventListener('sliding', function(e){
-			console.log(e.target.slide);
-
-			translateX(swiper, e.target.slide);
-
-
-		}, false)
-
-
-		swiper.addEventListener('slideRight', function(e){
-			// console.log('right')
-
-			// translateX(swiper, )
-			console.log(e.target.distance);
-			var distance = e.target.distance;
-
-			// 向右边滑动一个位置
-			if (distance > 120) {
-				times = times - 2;
-				translateX (swiper, times * (-swiperWidth) )
-				transitionDuration(swiper, 400)
+			function getSlides(swiper) {
+			    return toArray(swiper.children);
 			}
 
-
-
-
-		}, false)
-
-
-		swiper.addEventListener('slideLeft', function(e){
-			console.log('left')
-
-			console.log(e.target.distance);
-			var distance = e.target.distance;
-
-			if (distance > 120) {
-				times ++ ;
-
-				translateX (swiper, times * (-swiperWidth) )
-				transitionDuration(swiper, 400)
-
-
-
-				
+			function getSwiperWidth(swiper) {
+			    return document.body.clientWidth;
 			}
 
+			function translateX(el, v) {
+			    el.style.transform = 'translateX(' + v + 'px)';
+			}
+
+			function transitionDuration(el, v) {
+			    el.style.transitionDuration = v + 'ms';
+			}
+
+			function append() {
+			    var head = slides[0].cloneNode(true);
+			    var tail = slides[slides.length - 1].cloneNode(true);
+			    swiper.insertBefore(tail, slides[0]);
+			    swiper.appendChild(head);
+			}
+
+			function x() {
+			    return -(swiperWidth * activeSlide);
+			}
+			append();
+			slidesNumber = getSlides(swiper).length;
+			activeSlide = 1;
+			translateX(swiper, x());
+			// allowUser = true;
+			timer = setTimeout(function() {
+			    clearTimeout(timer);
+			    transitionDuration(swiper, config.duration);
+			    activeSlide++;
+			    // allowUser = true;
+			    translateX(swiper, x());
+			}, config.interval);
 
 
 
@@ -378,25 +180,37 @@ times 的起点为 1, 最高只能达到 slidesNumber + 2 -1, 也就是
 
 
 
-		}, false)
+
+
+
+			function handler() {
+			    if (activeSlide == slidesNumber - 1) {
+			        activeSlide = 0;
+			        transitionDuration(swiper, 0);
+			        activeSlide++;
+			        translateX(swiper, x());
+			    }
+			    timer = setTimeout(function() {
+			        clearTimeout(timer);
+			        transitionDuration(swiper, config.duration);
+			        activeSlide++;
+			        translateX(swiper, x());
+			    }, config.interval);
+			}
+			swiper.addEventListener('transitionend', handler, false);
 
 
 
 
-		console.log(swiper.getBoundingClientRect())
 
 
 
 
 
-
-
-
-
-
-
-
-
+			document.querySelector('.swiper-container').addEventListener('touchstart', function(e) {
+			    e.preventDefault();
+			    e.stopPropagation();
+			}, false)
 
 
 		}// end mounted
