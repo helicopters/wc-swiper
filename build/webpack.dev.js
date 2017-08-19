@@ -5,9 +5,6 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 // 在命令行里面的错误提示友好一点
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
 
-// 获取全局变量
-const env = require('../config/dev')
-
 const config = {
     entry: {
         // webpack-hot-middleware/client 是必须要加上的, 不然的话不会热更新
@@ -32,12 +29,6 @@ const config = {
                 test: /\.less$/,
                 use: ['style-loader', 'css-loader', 'postcss-loader', 'less-loader']
             },
-            {
-                test: /\.styl$/,
-                use: ['style-loader', 'css-loader', 'postcss-loader', 'stylus-loader']
-            },
-
-
             {
                 test: /\.css$/,
                 // 这个后面不能加上 postcss-loader
@@ -82,15 +73,13 @@ const config = {
     plugins: [
         new FriendlyErrorsPlugin(),
         new webpack.HotModuleReplacementPlugin(),
-        // new webpack.NoEmitOnErrorsPlugin(),
-        // new ExtractTextPlugin('style.css'),
         new HtmlWebpackPlugin({
             template: './index.html'
         }),
         // 定义全局变量
         new webpack.DefinePlugin({
             // 直接使用 env 对象
-            'process.env': env
+            'process.env': '"development"'
         })
     ]
 };

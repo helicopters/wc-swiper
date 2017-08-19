@@ -16,8 +16,7 @@ const app = express();
 // 这个玩意可以直接给个随机数
 
 // 80 端口是 http 协议的专用端口, 专用端口！
-// const port = parseInt(Math.random() * 10000) + 5000;
-const port = 9900;
+const port = parseInt(Math.random() * 10000) + 5000;
 // const  port = '80';
 // 设置 webpackDevMiddleware
 const devMiddleware = webpackDevMiddleware(compiler, {
@@ -45,8 +44,6 @@ app.use(hotMiddleware);
 
 // 挂载到虚拟路径上面
 app.use('/static', express.static('./static'));
-
-
 
 // 监听路径
 app.listen(port, function(){
