@@ -37,6 +37,11 @@
         border-radius: 50%;
         background: green;
     }
+
+.wc-dot-active {
+  background: red!important;
+}
+
 </style>
 <template>
   <div id="app">

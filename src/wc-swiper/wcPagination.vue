@@ -8,30 +8,23 @@
 	display: flex;
 	align-items:center;
 	justify-content: center;
-	.wc-pagination-wrapper {
-		display: flex;
-		.wc-dot {
-			height: 8px;
-			width: 8px;
-			background: #000;
-			opacity: 0.2;
-			margin: 0 5px;
-			border-radius: 50%;
-		}
-		.active {
-			opacity: 1;
-			background: #3498db;
-		}
+	.wc-dot {
+		height: 8px;
+		width: 8px;
+		background: #000;
+		opacity: 0.2;
+		margin: 0 5px;
+		border-radius: 50%;
 	}
-
+	.wc-dot-active {
+		opacity: 1;
+		background: #3498db;
+	}
 }	
 </style>
 <template>
 	<div class="wc-pagination">
-		<div class="wc-pagination-wrapper">
-			<div class="wc-dot" v-for="v in slides" :class="{'active': cur==v-1}">
-			</div>			
-		</div>
+		<div class="wc-dot" v-for="v in slides" :class="{'wc-dot-active': cur==v-1}"></div>	
 	</div>
 </template>
 <script>
