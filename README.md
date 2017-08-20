@@ -21,11 +21,13 @@ Vue.use(wcSwiper);
 ```
 
 ```html
-<wc-swiper>
-	<wc-slide v-for="(v, k) in list" :key="k">
-		{{v}}
-	</wc-slide>
-</wc-swiper>
+<div class="header" v-if="list.length">
+	<wc-swiper>
+		<wc-slide v-for="(v, k) in list" :key="k">
+			{{v}}
+		</wc-slide>
+	</wc-swiper>
+</div>
 ```
 
 ## 配置说明
@@ -47,6 +49,14 @@ interval: 配置两次滑动的间隔时间
 }
 ```
 
+3. 我在 wc-swiper 外面包裹了一层div, 是因为防止这样的一种情况: 数据是异步获取, 而 wc-swiper 在页面
+进入的时候就开始初始化, 这样会导致初始化失败: 因为此时数据为空. 所以包裹一层, 通过 v-if, 来控制当存在
+数据的时候才初始化. 
+
 ## 尚未解决的问题
 1. 多指触碰的时候, 会导致 slide 定位错乱;
 2. 如果 interval 设置的比较短 (比如 < 100), 此时有很大概率使得用户行为出错. 
+
+
+## 实现步骤
+

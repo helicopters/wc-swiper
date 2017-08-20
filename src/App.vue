@@ -21,15 +21,38 @@
       height: 100%;
       width: 100%;
     }
+    .header {
+      height: 250px;
+    }
+    .test {
+      background: red;
+      height: 20px;
+      width: 100px;
+      bottom: 10px;
+      position: absolute;
+    }
+    .dot {
+        height: 10px;
+        width: 10px;
+        border-radius: 50%;
+        background: green;
+    }
 </style>
 <template>
   <div id="app">
-    
-      <wc-swiper :duration="300" :interval="2000" :done="done">
-        <wc-slide v-for="(item, key) in list" :key="key" class="slide">
-          <img :src="item" alt="">
-        </wc-slide>
-      </wc-swiper>
+      <div class="header" v-if="list.length">
+
+        <wc-swiper :duration="300" :interval="2000">
+          <wc-slide v-for="(item, key) in list" :key="key" class="slide">
+            <img :src="item" alt="">
+          </wc-slide>
+        </wc-swiper>
+
+
+
+        
+      </div>
+
 
   </div>
 </template>
@@ -39,18 +62,14 @@
     data () {
       return {
         list: [],
-        done: false,
-        config: {
-          interval: 1000,
-          duration: 4000
-        }
+        done: false
       }
     },
     mounted () {
       setTimeout(()=>{
         this.done = true;
         this.list = ['http://exploreroute.oss-cn-shanghai.aliyuncs.com/74946.jpg', 'http://exploreroute.oss-cn-shanghai.aliyuncs.com/64905.jpg','http://exploreroute.oss-cn-shanghai.aliyuncs.com/27965.jpg']
-      }, 2000)
+      }, 20)
     }
   }
 </script>

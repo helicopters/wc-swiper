@@ -1,65 +1,65 @@
 <style scoped lang="less">
 .wc-swiper-container {
+	position: relative;
     width: 100%;
     height: 100%;
     overflow: hidden;
 }
 .wc-swiper-box {
-	position: relative;
     height: 100%;
     width: 100%;
     display: flex;
 }
+
 </style>
 <template>
     <div class="wc-swiper-container">
         <div class="wc-swiper-box">
 			<slot/>
         </div>
+        <wc-pagination :slides="slides" :cur="currentSlide"/>
     </div>
 </template>
 <script>
+	import wcPagination from './wcPagination'
 	export default {
 		name: 'wcSwiper',
+		components: {
+			wcPagination
+		},
 		props: {
 			duration: {
 				default: 500 // 默认一次滑动的事件. 
 			},
 			interval: {
 				default: 2500
-			},
-			done: {
-				default: false
 			}
 		},
-		watch: {
-			'done' (v) {
-				if (v) {
-					// console.log(this)
-					// this.init();
-					// console.log(this.start())
-					setTimeout(()=>{
-						this.start();
-					},0)
-					// this.init();
-				}
+		data () {
+			return {
+				slides: 0,
+				currentSlide: 0
 			}
 		},
 		mounted () {
-			// 我没有全盘把代码改成 Vue 的形式, 包括一些变量和方法的定义
-			// 因为我希望以后可以抽离出来, 即使不基于 Vue, 代码一样可用. 
-			// this.init();
+			this.init();
 		},
 		methods: {
-			start () {
+			init () {
+				var that = this;
 				// 获取 swiper 容器, 主要是为了在它上面绑定事件. 
 				var swiperContainer = document.querySelector('.wc-swiper-container');
 
 				var swiper = document.querySelector('.wc-swiper-box');
 				var swiperWidth = swiper.clientWidth;
+
 				var slides = toArray(swiper.children);
 				var slidesNumber = slides.length;
+
 				var currentSlide = 0;
+
+				// 为了渲染 pagination 而存在的一句话
+				this.slides = slidesNumber;
 
 				// 用户配置选项. 
 				var config = {
@@ -72,7 +72,7 @@
 
 				var moving = false;
 				// 用户触发的滑动, 松开之后以什么 transtion-duration 进行改变. 
-				var userDuration = 260;
+				var userDuration = 360;
 
 				// 用户需要滑动多少距离, 我们才认定需要换新的 slide
 				var threshold = 100;
@@ -90,12 +90,13 @@
 				}
 
 				function append () {
-				    var head = slides[0].cloneNode(slides[0], true);
-				    var tail = slides[slidesNumber - 1].cloneNode(slides[slidesNumber - 1], true);
+					if (slides.length) {
+					    var head = slides[0].cloneNode(slides[0], true);
+					    var tail = slides[slidesNumber - 1].cloneNode(slides[slidesNumber - 1], true);
 
-				    swiper.appendChild(head);
-				    swiper.insertBefore(tail, slides[0]);
-
+					    swiper.appendChild(head);
+					    swiper.insertBefore(tail, slides[0]);						
+					}
 				}
 
 				// transitionend 的 handler
@@ -107,6 +108,9 @@
 				        currentSlide++;
 				        translateX(getLocation());
 				    }
+
+					// for pagination
+					that.currentSlide = currentSlide - 1;
 
 				    // 继续重新定时
 				    timer = setTimeout(function() {
@@ -258,7 +262,11 @@
 				    translateX(getLocation());
 				}, config.interval);
 
-			} // end init
+				// for pagination
+				this.currentSlide = currentSlide - 1;
+
+			}, // end init
+
 		} // end methods
 
 
