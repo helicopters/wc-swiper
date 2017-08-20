@@ -10,7 +10,6 @@
     width: 100%;
     display: flex;
 }
-
 </style>
 <template>
     <div class="wc-swiper-container">
@@ -28,17 +27,34 @@
 			},
 			interval: {
 				default: 2500
+			},
+			done: {
+				default: false
+			}
+		},
+		watch: {
+			'done' (v) {
+				if (v) {
+					// console.log(this)
+					// this.init();
+					// console.log(this.start())
+					setTimeout(()=>{
+						this.start();
+					},0)
+					// this.init();
+				}
 			}
 		},
 		mounted () {
 			// 我没有全盘把代码改成 Vue 的形式, 包括一些变量和方法的定义
 			// 因为我希望以后可以抽离出来, 即使不基于 Vue, 代码一样可用. 
-			this.init();
+			// this.init();
 		},
 		methods: {
-			init () {
+			start () {
 				// 获取 swiper 容器, 主要是为了在它上面绑定事件. 
 				var swiperContainer = document.querySelector('.wc-swiper-container');
+
 				var swiper = document.querySelector('.wc-swiper-box');
 				var swiperWidth = swiper.clientWidth;
 				var slides = toArray(swiper.children);

@@ -25,7 +25,7 @@
 <template>
   <div id="app">
     
-      <wc-swiper :duration="300" :interval="2000">
+      <wc-swiper :duration="300" :interval="2000" :done="done">
         <wc-slide v-for="(item, key) in list" :key="key" class="slide">
           <img :src="item" alt="">
         </wc-slide>
@@ -38,12 +38,19 @@
     name: 'app',
     data () {
       return {
-        list: ['http://exploreroute.oss-cn-shanghai.aliyuncs.com/74946.jpg', 'http://exploreroute.oss-cn-shanghai.aliyuncs.com/64905.jpg','http://exploreroute.oss-cn-shanghai.aliyuncs.com/27965.jpg'],
+        list: [],
+        done: false,
         config: {
           interval: 1000,
           duration: 4000
         }
       }
+    },
+    mounted () {
+      setTimeout(()=>{
+        this.done = true;
+        this.list = ['http://exploreroute.oss-cn-shanghai.aliyuncs.com/74946.jpg', 'http://exploreroute.oss-cn-shanghai.aliyuncs.com/64905.jpg','http://exploreroute.oss-cn-shanghai.aliyuncs.com/27965.jpg']
+      }, 2000)
     }
   }
 </script>
