@@ -1,105 +1,32 @@
-<style>
-
-    .swiper-container{
-        /*position: relative;*/
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        /*visibility: visible;*/
-    }
-
-
-    .swiper-box {
-        /*height: 300px;*/
-        height: 100%;
-        /*width: 1125px;*/
-        width: 100%;
-        display: flex;
-        /*width: 100%;*/
-        
-        /*font-size: 0;*/
-        /*overflow: hidden;*/
-    }
-    .slide {
-        /*transition-property: transform;*/
-        position: relative;
-        /*visibility: visible;*/
-        /*top:0;*/
-        /*left:0;*/
-        /*width: 100%;*/
-        font-size: 50px;
-        text-align: center;
-        /*-webkit-overflow-scrolling: touch;*/
-        /*user-select:none;*/
-
-        /*transform-origin: 0px 0px 0px;*/
-/*      opacity: 1;
-        transform: scale(1, 1);
-*/
-        height: 50%;
-        /*display: inline-block;*/
-        width: 100%;
-        flex-shrink: 0;
-
-
-/*  -webkit-backface-visibility: hidden;
-    -moz-backface-visibility: hidden;
-    -ms-backface-visibility: hidden;
-    backface-visibility: hidden;
-    -webkit-perspective: 1000;
-    -moz-perspective: 1000;
-    -ms-perspective: 1000;
-    perspective: 1000;
-*/
-
-
-        
-        /*transition: all 3s ease-in 2s;*/
-    }
-    .transition {
-        /*transition: all 2s;*/
-        /*transition-duration: 1s;*/
-        /*transition-delay: 1.2s;*/
-    }
-    .slide-a {
-        background: red;
-    }
-    .slide-b {
-        background: yellow;
-        /*transition-duration: 500ms;*/
-        /*transform: translateX(100%);*/
-        /*-webkit-transition-duration: 500ms;*/
-    }
-    .slide-c {
-        background: blue;
-        /*transform: translateX(200%);*/
-
-    }
-
-
-
+<style scoped lang="less">
+.wc-swiper-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.wc-swiper-box {
+    height: 100%;
+    width: 100%;
+    display: flex;
+}
+.wc-slide {
+    height: 50%;
+    width: 100%;
+    flex-shrink: 0;
+}
 </style>
 <template>
-
-
-    <div class="swiper-container">
-
-
-        <div class="swiper-box">
-            <!-- <div class=" slide slide-c">3</div> -->
-            <div class=" slide slide-c">3</div>
-            <div class=" slide slide-a">1</div>
-            <div class=" slide slide-b">2</div>
-            <div class=" slide slide-c">3</div>
-            <div class=" slide slide-c">4</div>
-            <div class=" slide slide-c">5</div>
-            <div class=" slide slide-c">6</div>
-            <div class=" slide slide-a">1</div>
-            <!-- <div class=" slide slide-a">1</div> -->
-
+    <div class="wc-swiper-container">
+        <div class="wc-swiper-box">
+            <div class="wc-slide">3</div>
+            <div class="wc-slide">1</div>
+            <div class="wc-slide">2</div>
+            <div class="wc-slide">3</div>
+            <div class="wc-slide">4</div>
+            <div class="wc-slide">5</div>
+            <div class="wc-slide">6</div>
+            <div class="wc-slide">1</div>
         </div>
-
-
     </div>
 
 
@@ -109,8 +36,8 @@
 
     export default {
         mounted () {
-var swiperContainer = document.querySelector('.swiper-container');
-var swiper = document.querySelector('.swiper-box');
+var swiperContainer = document.querySelector('.wc-swiper-container');
+var swiper = document.querySelector('.wc-swiper-box');
 var swiperWidth = swiper.clientWidth;
 var slides = toArray(swiper.children);
 var slidesNumber = slides.length;
@@ -232,7 +159,7 @@ swiper.addEventListener('transitionend', handler, false);
 swiper.addEventListener('touchstart', s, false);
 swiper.addEventListener('touchmove', m, false);
 swiper.addEventListener('touchend', e, false);
-document.querySelector('.swiper-container').addEventListener('touchstart', function(e) {
+swiperContainer.addEventListener('touchstart', function(e) {
     e.preventDefault();
     e.stopPropagation();
 }, false);
