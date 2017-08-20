@@ -17,13 +17,17 @@
       justify-content: center;
       font-size: 50px;
     }
+    img {
+      height: 100%;
+      width: 100%;
+    }
 </style>
 <template>
   <div id="app">
     
-      <wc-swiper>
+      <wc-swiper :duration="300" :interval="2000">
         <wc-slide v-for="(item, key) in list" :key="key" class="slide">
-          <h1>{{item}}</h1>
+          <img :src="item" alt="">
         </wc-slide>
       </wc-swiper>
 
@@ -34,7 +38,11 @@
     name: 'app',
     data () {
       return {
-        list: [1, 2,3]
+        list: ['http://exploreroute.oss-cn-shanghai.aliyuncs.com/74946.jpg', 'http://exploreroute.oss-cn-shanghai.aliyuncs.com/64905.jpg','http://exploreroute.oss-cn-shanghai.aliyuncs.com/27965.jpg'],
+        config: {
+          interval: 1000,
+          duration: 4000
+        }
       }
     }
   }

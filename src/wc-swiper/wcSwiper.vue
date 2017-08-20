@@ -22,7 +22,17 @@
 <script>
 	export default {
 		name: 'wcSwiper',
+		props: {
+			duration: {
+				default: 500 // 默认一次滑动的事件. 
+			},
+			interval: {
+				default: 2500
+			}
+		},
 		mounted () {
+			// 我没有全盘把代码改成 Vue 的形式, 包括一些变量和方法的定义
+			// 因为我希望以后可以抽离出来, 即使不基于 Vue, 代码一样可用. 
 			this.init();
 		},
 		methods: {
@@ -37,8 +47,8 @@
 
 				// 用户配置选项. 
 				var config = {
-				    interval: 2000,
-				    duration: 500
+				    interval: this.interval,
+				    duration: this.duration
 				}
 				var timer = null;
 				var pos = {};
@@ -74,12 +84,15 @@
 
 				// transitionend 的 handler
 				function handler() {
+					// 如果当前滑动到最后一个
 				    if (currentSlide == slidesNumber - 1) {
 				        currentSlide = 0;
 				        transitionDuration(0);
 				        currentSlide++;
 				        translateX(getLocation());
 				    }
+
+				    // 继续重新定时
 				    timer = setTimeout(function() {
 				        clearTimeout(timer);
 				        transitionDuration(config.duration);
@@ -87,45 +100,66 @@
 				        translateX(getLocation());
 				    }, config.interval);
 				}
+
+				// touchstart handler
 				function s(e) {
 				    if (!moving) {
 				        moving = true;
+				        // 先清除定时器
 				        clearTimeout(timer);
+				        // 再解绑 transitionend 事件
 				        swiper.removeEventListener('transitionend', handler, false);
+				        // 然后设置 transition-duration = 0
 				        transitionDuration(0);
+				        // 最后重新定位一下.
 				        pos.clickX = e.changedTouches[0].pageX;
 				        pos.initX = swiper.getBoundingClientRect().left;
 				        translateX(pos.initX);
 				    }
 				}
+
+				// touchmove handler
 				function m(e) {
 				    if (moving) {
+				    	// 让 swiper 跟随手指移动
 				        pos.moveX = e.changedTouches[0].pageX;
 				        translateX(pos.initX - (pos.clickX - pos.moveX));
 				    }
 				}
+
+				// touchend handler
 				function e(e) {
-				    var distance = 0;
+				    var distance;
 				    if (moving) {
 				        moving = false;
+
+				        // 计算出用户最终移动的位移
 				        pos.endX = e.changedTouches[0].pageX;
 				        distance = pos.clickX - pos.endX;
+				        // 反正先设置好 transition-duration.
 				        transitionDuration(userDuration);
 				        if (distance == 0) {
+				        	// 如果 distance=0, 说明用户仅仅是连续点击了两次, 我们不做任何
+				        	// 处理, 恢复原状即可.
 				            translateX(getLocation());
 				        } else {
+				        	// 如果位移小于我们设定的值, 可以直接让它恢复原状即可
 				            if (Math.abs(distance) < threshold) {
 				                translateX(getLocation());
 				            } else {
+				            	// 如果位移大于我们设定的值, 我们就要看下了
 				                if (distance > 0) {
 				                    currentSlide++;
 				                } else {
 				                    currentSlide--;
 				                }
+				                // boundary 是精华部分. 
 				                boundary();
 				            }
 				        }
+				        // 用户行为之后, 我们是要重新开启定时器的.
 				        timer = setTimeout(function() {
+				        	// 重新绑定 transitionend 事件.
 				            swiper.addEventListener('transitionend', handler, false);
 				            clearTimeout(timer);
 				            transitionDuration(config.duration);
@@ -134,9 +168,13 @@
 				        }, config.interval);
 				    }
 				}
+
+				// 对于边界情况的判断. 
 				function boundary() {
 				    var start = swiper.getBoundingClientRect().left;
 				    var distance = 0;
+
+				    // 如果当前是第 0 个
 				    if (currentSlide == 0) {
 				        distance = swiperWidth * (slidesNumber - 1) - (swiperWidth + start);
 				        
@@ -144,6 +182,8 @@
 
 				        transitionDuration(0);
 				        translateX(-distance);
+
+				        // ...
 				        setTimeout(function() {
 				            transitionDuration(userDuration);
 				            translateX(getLocation());
