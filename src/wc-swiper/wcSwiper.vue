@@ -225,6 +225,7 @@
 				        translateX(getLocation());
 				    }
 				}
+
 				// 绑定 transitionend 事件.
 				swiper.addEventListener('transitionend', handler, false);
 
@@ -232,11 +233,11 @@
 				swiper.addEventListener('touchmove', m, false);
 				swiper.addEventListener('touchend', e, false);
 
-				// 为 container 绑定 touchstart 事件
-				// 主要是为了防止在滑动的时候, 页面跟着滑动
-				swiperContainer.addEventListener('touchstart', function(e) {
-				    e.preventDefault();
-				    e.stopPropagation();
+				// 为 swiper-container 绑定 touchmove 事件
+				// 注意这里不要绑定在 touchstart 上面, 因为这样会直接阻止掉 click 事件的触发
+				// 也就是说页面上的 a 标签不会跳转了以后. 
+				swiperContainer.addEventListener('touchmove', function(e) {
+				    e.preventDefault();  // 防止在滑动的时候, 页面跟着滑动
 				}, false);
 
 				// 追加头尾元素

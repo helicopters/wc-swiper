@@ -42,14 +42,20 @@
   background: red!important;
 }
 
-</style>
+/*a {
+  display: block;
+}
+*/</style>
 <template>
   <div id="app">
       <div class="header" v-if="list.length">
 
         <wc-swiper :duration="300" :interval="2000">
           <wc-slide v-for="(item, key) in list" :key="key" class="slide">
-            <img :src="item" alt="">
+            <a href="http://www.baidu.com">
+              <img :src="item" alt="">
+            </a>
+            
           </wc-slide>
         </wc-swiper>
 
