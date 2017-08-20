@@ -29,14 +29,14 @@ Vue.use(wcSwiper);
 ```
 
 ## 配置说明
-1. <wc-swiper> 上暴露了两个配置选项, duration, interval, 类似这样:
+1. wc-swiper 上暴露了两个配置选项, duration, interval, 类似这样:
 ```html
 <wc-swiper :duration="300" :interval="2000">
 duration: 配置每一次滑动持续的时间
 interval: 配置两次滑动的间隔时间
 ```
 
-2. 可以在 <wc-slide> 上面添加class, 用来控制 slide 的样式, 比如这样
+2. 可以在 wc-slide 上面添加class, 用来控制 slide 的样式, 比如这样
 ```html
 <wc-slide class="custom-slide"></wc-slide>
 ```
@@ -46,9 +46,6 @@ interval: 配置两次滑动的间隔时间
 	...
 }
 ```
-
-3. 每一个 slide 的内容放在 <wc-slide> 中.
-
 
 ## 尚未解决的问题
 1. 多指触碰的时候, 会导致 slide 定位错乱;
