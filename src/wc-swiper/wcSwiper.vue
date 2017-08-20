@@ -177,6 +177,8 @@
 				                boundary();
 				            }
 				        }
+				        // for pagination
+				        that.currentSlide = currentSlide - 1;
 				        // 用户行为之后, 我们是要重新开启定时器的.
 				        timer = setTimeout(function() {
 				        	// 重新绑定 transitionend 事件.

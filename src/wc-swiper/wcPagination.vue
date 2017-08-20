@@ -2,31 +2,36 @@
 .wc-pagination {
 	position: absolute;
 	bottom: 10px;
-	height: 20px;
+	height: 18px;
 	width: 100%;
-	background: red;
+	background: transparent;
 	display: flex;
-	.wc-dot {
-		height: 10px;
-		width: 10px;
-		background: green;
-		margin: 0 10px;
-		
+	align-items:center;
+	justify-content: center;
+	.wc-pagination-wrapper {
+		display: flex;
+		.wc-dot {
+			height: 8px;
+			width: 8px;
+			background: #000;
+			opacity: 0.2;
+			margin: 0 5px;
+			border-radius: 50%;
+		}
+		.active {
+			opacity: 1;
+			background: #3498db;
+		}
 	}
-	.active {
-		background: yellow;
 
-	}
 }	
 </style>
 <template>
 	<div class="wc-pagination">
-	
-		<div class="wc-dot" v-for="v in slides" :class="{'active': cur==v-1}">
-			{{v}}{{cur}}
-
+		<div class="wc-pagination-wrapper">
+			<div class="wc-dot" v-for="v in slides" :class="{'active': cur==v-1}">
+			</div>			
 		</div>
-	
 	</div>
 </template>
 <script>
