@@ -18,14 +18,14 @@
 <template>
     <div class="wc-swiper-container">
         <div class="wc-swiper-box">
-            <div class="wc-slide">3</div>
+
             <div class="wc-slide">1</div>
             <div class="wc-slide">2</div>
             <div class="wc-slide">3</div>
             <div class="wc-slide">4</div>
             <div class="wc-slide">5</div>
             <div class="wc-slide">6</div>
-            <div class="wc-slide">1</div>
+
         </div>
     </div>
 
@@ -65,6 +65,16 @@ function transitionDuration(v) {
 function getLocation() {
     return -(swiperWidth * currentSlide);
 }
+
+function append () {
+    var head = slides[0].cloneNode(slides[0], true);
+    var tail = slides[slidesNumber - 1].cloneNode(slides[slidesNumber - 1], true);
+
+    swiper.appendChild(head);
+    swiper.insertBefore(tail, slides[0]);
+
+}
+
 function handler() {
     if (currentSlide == slidesNumber - 1) {
         currentSlide = 0;
@@ -163,6 +173,9 @@ swiperContainer.addEventListener('touchstart', function(e) {
     e.preventDefault();
     e.stopPropagation();
 }, false);
+
+append();
+
 currentSlide = 1;
 translateX(getLocation());
 timer = setTimeout(function() {
