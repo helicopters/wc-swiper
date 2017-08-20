@@ -8,22 +8,32 @@
     #app {
       height: 100%;
     }
+    h1 {
+      height: 100%;
+      width: 100%;
+      background: gray;
+    }
 </style>
 <template>
   <div id="app">
-      <swiper></swiper>
-      <!-- <router-view></router-view> -->
+    
+      <wc-swiper>
+        <wc-slide v-for="(item, key) in list" :key="key">
+          <h1>{{item}}</h1>
+        </wc-slide>
+      </wc-swiper>
+
+
+
   </div>
 </template>
 <script>
-  import Swiper from './wc-swiper/tpl'
   export default {
     name: 'app',
-    components: {
-      Swiper
+    data () {
+      return {
+        list: [1, 2,3]
+      }
     }
   }
-
-
-
 </script>

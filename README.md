@@ -1,4 +1,12 @@
 实现步骤
+
+<wc-swiper>
+	<wc-slide v-for="(slide,key) in list" :key="key">
+	<wc-pageation/>
+</wc-swiper>
+
+
+实现步骤
 1. 让所有 slide 水平排列 , html 结构..
 
 2. 对所有 slide 进行定位, 让它们层叠在一起, 并且位置都在可视区域之内(vp)
