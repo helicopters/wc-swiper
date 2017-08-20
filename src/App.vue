@@ -16,7 +16,7 @@
   </div>
 </template>
 <script>
-  import Swiper from './wc-swiper/tpl'
+  import Swiper from './wc-swiper/user'
   export default {
     name: 'app',
     components: {
