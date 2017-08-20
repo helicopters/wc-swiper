@@ -45,7 +45,10 @@
 
 
 				var moving = false;
+				// 用户触发的滑动, 松开之后以什么 transtion-duration 进行改变. 
 				var userDuration = 260;
+
+				// 用户需要滑动多少距离, 我们才认定需要换新的 slide
 				var threshold = 100;
 				function toArray(arraylike) {
 				    return Array.prototype.slice.call(arraylike);
@@ -69,6 +72,7 @@
 
 				}
 
+				// transitionend 的 handler
 				function handler() {
 				    if (currentSlide == slidesNumber - 1) {
 				        currentSlide = 0;
@@ -159,25 +163,42 @@
 				        translateX(getLocation());
 				    }
 				}
+				// 绑定 transitionend 事件.
 				swiper.addEventListener('transitionend', handler, false);
+
 				swiper.addEventListener('touchstart', s, false);
 				swiper.addEventListener('touchmove', m, false);
 				swiper.addEventListener('touchend', e, false);
+
+				// 为 container 绑定 touchstart 事件
+				// 主要是为了防止在滑动的时候, 页面跟着滑动
 				swiperContainer.addEventListener('touchstart', function(e) {
 				    e.preventDefault();
 				    e.stopPropagation();
 				}, false);
 
+				// 追加头尾元素
 				append();
+
+				// 重置 slides, slidesNumber -> 因为新增了 头尾
 				slides = toArray(swiper.children);
 				slidesNumber = slides.length;
 
+				// 初始化, currentSlide = 1, 因为要忽略掉我们追加的 head
 				currentSlide = 1;
+				// 定位, 注意此时 transition-duration:0, 所以是瞬间定位过去, 没有 transition 效果
 				translateX(getLocation());
+
+				// 启动定时器, 在指定时间之后, 滑动一下
 				timer = setTimeout(function() {
 				    currentSlide++;
+
+				    // 清除定时器
 				    clearTimeout(timer);
+
+				    // 设置 transition-duration
 				    transitionDuration(config.duration);
+				    // 定位
 				    translateX(getLocation());
 				}, config.interval);
 
