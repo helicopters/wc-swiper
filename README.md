@@ -21,40 +21,28 @@ Vue.use(wcSwiper);
 ```
 
 ```html
-<div class="header" v-if="list.length">
+<div v-if="list.length">
 	<wc-swiper>
 		<wc-slide v-for="(v, k) in list" :key="k">
-			{{v}}
+			// 这里放具体类容
 		</wc-slide>
 	</wc-swiper>
 </div>
 ```
 
 ## 配置说明
-1. wc-swiper 上暴露了两个配置选项, duration, interval, 类似这样:
+* wc-swiper 上暴露了两个配置选项, duration, interval, 类似这样:
 ```html
 <wc-swiper :duration="300" :interval="2000">
 duration: 配置每一次滑动持续的时间
 interval: 配置两次滑动的间隔时间
 ```
 
-2. 可以在 wc-slide 上面添加class, 用来控制 slide 的样式, 比如这样
-```html
-<wc-slide class="custom-slide"></wc-slide>
-```
-```css
-.custom-slide{
-	height: 300px;
-	...
-}
-```
-
-3. 我在 wc-swiper 外面包裹了一层div, 是因为防止这样的一种情况: 数据是异步获取, 而 wc-swiper 在页面
+* 我在 wc-swiper 外面包裹了一层div, 是因为防止这样的一种情况: 数据是异步获取, 而 wc-swiper 在页面
 进入的时候就开始初始化, 这样会导致初始化失败: 因为此时数据为空. 所以包裹一层, 通过 v-if, 来控制当存在
 数据的时候才初始化. 
 
-
-## 关于 pagination
+* 关于 pagination
 目前暂时没有提供相关的接口去修改 pagination 的样式。同时 pagination 的样式比较少, 所以你可以选择直接覆盖:
 pagination 的实现结构:
 ```html
