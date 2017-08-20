@@ -11,12 +11,20 @@
 }
 </style>
 <template>
-	<div class="wc-slide">
+	<div class="wc-slide" @click="fn" @touchstart="start">
 		<slot/>
 	</div>
 </template>
 <script>
 	export default {
-		name: 'wcSlide'
+		name: 'wcSlide',
+		methods: {
+			fn () {
+				this.$emit('click');
+			},
+			start () {
+				this.$emit('touchstart')
+			}
+		}
 	}
 </script>

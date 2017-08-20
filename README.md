@@ -33,12 +33,15 @@ Vue.use(wcSwiper);
 ## 配置说明
 * wc-swiper 上暴露了两个配置选项, duration, interval, 类似这样:
 ```html
-<wc-swiper :duration="300" :interval="2000">
-duration: 配置每一次滑动持续的时间
-interval: 配置两次滑动的间隔时间
+	<wc-swiper :duration="300" :interval="2000">
+	duration: 配置每一次滑动持续的时间
+	interval: 配置两次滑动的间隔时间
 ```
 
-* 我在 wc-swiper 外面包裹了一层div, 是因为防止这样的一种情况: 数据是异步获取, 而 wc-swiper 在页面
+* wc-slide 上面可以监听两个事件: touchstart & click, 因为可能点击跳转并不是通过 a 标签实现的,
+而是用户自定义实现.
+
+* 在 wc-swiper 外面包裹了一层div, 是因为防止这样的一种情况: 数据是异步获取, 而 wc-swiper 在页面
 进入的时候就开始初始化, 这样会导致初始化失败: 因为此时数据为空. 所以包裹一层, 通过 v-if, 来控制当存在
 数据的时候才初始化. 
 

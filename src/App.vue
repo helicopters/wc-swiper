@@ -51,11 +51,10 @@
       <div class="header" v-if="list.length">
 
         <wc-swiper :duration="300" :interval="2000">
-          <wc-slide v-for="(item, key) in list" :key="key" class="slide">
-            <a href="http://www.baidu.com">
+          <wc-slide v-for="(item, key) in list" :key="key" class="slide" @click="test" @touchstart="hello">
+            <!-- <a href="http://www.baidu.com"> -->
               <img :src="item" alt="">
-            </a>
-            
+            <!-- </a>  -->
           </wc-slide>
         </wc-swiper>
 
@@ -81,6 +80,14 @@
         this.done = true;
         this.list = ['http://exploreroute.oss-cn-shanghai.aliyuncs.com/74946.jpg', 'http://exploreroute.oss-cn-shanghai.aliyuncs.com/64905.jpg','http://exploreroute.oss-cn-shanghai.aliyuncs.com/27965.jpg']
       }, 20)
+    }, 
+    methods: {
+      test () {
+        console.log('yes')
+      },
+      hello () {
+        console.log('hello')
+      }
     }
   }
 </script>
