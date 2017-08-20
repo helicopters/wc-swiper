@@ -52,9 +52,9 @@
 
         <wc-swiper :duration="300" :interval="2000">
           <wc-slide v-for="(item, key) in list" :key="key" class="slide" @click="test" @touchstart="hello">
-            <!-- <a href="http://www.baidu.com"> -->
+            <a href="http://www.baidu.com">
               <img :src="item" alt="">
-            <!-- </a>  -->
+            </a> 
           </wc-slide>
         </wc-swiper>
 

@@ -1,4 +1,4 @@
-<style scoped lang="less">
+<style lang="less">
 .wc-slide {
 	height: 100%;
     width: 100%;

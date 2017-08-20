@@ -1,4 +1,4 @@
-<style scoped lang="less">
+<style lang="less">
 .wc-pagination {
 	position: absolute;
 	bottom: 10px;

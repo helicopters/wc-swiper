@@ -1,4 +1,4 @@
-<style scoped lang="less">
+<style lang="less">
 .wc-swiper-container {
 	position: relative;
     width: 100%;
