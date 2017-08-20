@@ -1,6 +1,5 @@
 <style scoped lang="less">
 .wc-slide {
-    height: 50%;
     width: 100%;
     flex-shrink: 0;
 }

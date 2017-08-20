@@ -5,6 +5,7 @@
     overflow: hidden;
 }
 .wc-swiper-box {
+	position: relative;
     height: 100%;
     width: 100%;
     display: flex;
@@ -22,21 +23,19 @@
 	export default {
 		name: 'wcSwiper',
 		mounted () {
-			// this.init();
-			var that = this;
-			// setTimeout(function(){
-				that.init();
-			// }, 100)
+			this.init();
 		},
 		methods: {
 			init () {
-
+				// 获取 swiper 容器, 主要是为了在它上面绑定事件. 
 				var swiperContainer = document.querySelector('.wc-swiper-container');
 				var swiper = document.querySelector('.wc-swiper-box');
 				var swiperWidth = swiper.clientWidth;
 				var slides = toArray(swiper.children);
 				var slidesNumber = slides.length;
 				var currentSlide = 0;
+
+				// 用户配置选项. 
 				var config = {
 				    interval: 2000,
 				    duration: 500
@@ -144,7 +143,7 @@
 				        setTimeout(function() {
 				            transitionDuration(userDuration);
 				            translateX(getLocation());
-				        }, 11);
+				        }, 20);
 				    } else if (currentSlide == slidesNumber - 1) {
 				        distance = start + (swiperWidth * (slidesNumber - 2))
 				        
@@ -155,7 +154,7 @@
 				        setTimeout(function() {
 				            transitionDuration(userDuration);
 				            translateX(getLocation());
-				        }, 11);
+				        }, 20);
 				    } else {
 				        translateX(getLocation());
 				    }
@@ -181,12 +180,6 @@
 				    transitionDuration(config.duration);
 				    translateX(getLocation());
 				}, config.interval);
-
-
-
-
-
-
 
 			} // end init
 		} // end methods

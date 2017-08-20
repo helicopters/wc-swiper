@@ -8,22 +8,24 @@
     #app {
       height: 100%;
     }
-    h1 {
-      height: 100%;
+    .slide {
+      height: 50%;
       width: 100%;
-      background: gray;
+      /*background: gray;*/
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 50px;
     }
 </style>
 <template>
   <div id="app">
     
       <wc-swiper>
-        <wc-slide v-for="(item, key) in list" :key="key">
+        <wc-slide v-for="(item, key) in list" :key="key" class="slide">
           <h1>{{item}}</h1>
         </wc-slide>
       </wc-swiper>
-
-
 
   </div>
 </template>
