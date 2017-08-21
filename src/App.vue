@@ -67,6 +67,9 @@
   </div>
 </template>
 <script>
+
+  // import {wcSwiper, wcSlide} from './wc-swiper'
+
   export default {
     name: 'app',
     data () {
@@ -75,6 +78,10 @@
         done: false
       }
     },
+    // components: {
+    //   wcSlide,
+    //   wcSwiper
+    // },
     mounted () {
       setTimeout(()=>{
         this.done = true;

@@ -12,6 +12,11 @@ const name = require(packageJson).name;
 
 const target = path.resolve(process.cwd(), name);
 
+// 支持单个文件引入的方式
+const vueFiles = path.resolve(process.cwd(), 'src/wc-swiper/*.vue');
+
+
+
 rm(path.resolve(process.cwd() , name), err => {
     if (err) {
         console.log(err)
@@ -27,9 +32,9 @@ rm(path.resolve(process.cwd() , name), err => {
             // 修改版本号
             modifyVersion();
 
-            // 不在打包之后的目录里面放置 README.md 文件
             cp('-R', src + '/*', target);
-            // cp('-R', './README.md');
+
+            cp('-R', vueFiles, target);
 
             console.log();
             console.log(chalk.green.bold('> Compile Successed'));

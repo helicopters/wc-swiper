@@ -8,3 +8,8 @@ export default {
 		Vue.component('wcSlide', Vue.extend(wcSlide));
 	}
 }
+
+export {
+	wcSwiper,
+	wcSlide
+}
