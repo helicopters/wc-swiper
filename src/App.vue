@@ -50,7 +50,7 @@
   <div id="app">
       <div class="header" v-if="list.length">
 
-        <wc-swiper :duration="300" :interval="2000">
+        <wc-swiper :duration="300" :interval="500">
           <wc-slide v-for="(item, key) in list" :key="key" class="slide" @click="test" @touchstart="hello">
             <a href="http://www.baidu.com">
               <img :src="item" alt="">

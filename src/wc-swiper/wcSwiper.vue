@@ -72,7 +72,9 @@
 
 				var moving = false;
 				// 用户触发的滑动, 松开之后以什么 transtion-duration 进行改变. 
-				var userDuration = 360;
+				// var userDuration = 360;
+				// 以用户自己设置的 duration 的 1/2 作为最终时间. 
+				var userDuration = this.duration/2;
 
 				// 用户需要滑动多少距离, 我们才认定需要换新的 slide
 				var threshold = 100;
