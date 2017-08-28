@@ -62,6 +62,8 @@
 				var pos = {};
 				var userDuration = this.duration / 2;
 				var threshold = 100;
+				var id;
+
 				function toArray(arraylike) {
 				    return Array.prototype.slice.call(arraylike);
 				}
@@ -98,12 +100,13 @@
 				        translateX(getLocation());
 				    }, config.interval);
 				}
-				var id;
+				
 				function s(e) {
 				    if (currentSlide == slidesNumber - 1) {
 				        return;
 				    }
-				    let curId = e.changedTouches[0].identifier;
+
+				    var curId = e.changedTouches[0].identifier;
 				    if (id) {
 				        if (curId !== id) {
 				            return;
@@ -122,7 +125,8 @@
 				    if (currentSlide == slidesNumber - 1) {
 				        return;
 				    }
-				    let curId = e.changedTouches[0].identifier;
+
+				    var curId = e.changedTouches[0].identifier;
 				    if (id == curId) {
 				        pos.moveX = e.targetTouches[0].pageX;
 				        translateX(pos.initX - (pos.clickX - pos.moveX));
@@ -132,10 +136,11 @@
 				    if (currentSlide == slidesNumber - 1) {
 				        return;
 				    }
-				    let curId = e.changedTouches[0].identifier;
+				    var distance;
+				    var curId = e.changedTouches[0].identifier;
 				    if (id == curId) {
 				        id = undefined;
-				        var distance;
+				        
 				        pos.endX = e.changedTouches[0].pageX;
 				        distance = pos.clickX - pos.endX;
 				        transitionDuration(userDuration);
@@ -210,13 +215,7 @@
 				    transitionDuration(config.duration);
 				    translateX(getLocation());
 				}, config.interval);
-
-				
-
-			}, 
-
-		} 
-
-
-	}
+			}  // end init
+		} // end mounted
+	} 
 </script>
