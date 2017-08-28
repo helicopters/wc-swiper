@@ -3,6 +3,7 @@
       height: 100%;
       font-size: 16px;
       max-width: 500px;
+      user-select:none;
 
     }
     #app {
@@ -41,7 +42,15 @@
 .wc-dot-active {
   background: red!important;
 }
-
+.a {
+  background: #f1716c;
+}
+.b {
+  background: #376956;
+}
+.c {
+  background: #495a90;
+}
 /*a {
   display: block;
 }
@@ -50,12 +59,22 @@
   <div id="app">
       <div class="header" v-if="list.length">
 
-        <wc-swiper :duration="300" :interval="500">
-          <wc-slide v-for="(item, key) in list" :key="key" class="slide" @click="test" @touchstart="hello">
-            <a href="http://www.baidu.com">
-              <img :src="item" alt="">
-            </a> 
+        <wc-swiper :duration="300" :interval="2000">
+          <wc-slide class="slide a">
+              1
           </wc-slide>
+
+
+          <wc-slide class="slide b">
+              2
+          </wc-slide>
+
+          <wc-slide class="slide c">
+              3
+          </wc-slide>
+
+
+
         </wc-swiper>
 
 
@@ -85,16 +104,16 @@
     mounted () {
       setTimeout(()=>{
         this.done = true;
-        this.list = ['http://exploreroute.oss-cn-shanghai.aliyuncs.com/74946.jpg', 'http://exploreroute.oss-cn-shanghai.aliyuncs.com/64905.jpg','http://exploreroute.oss-cn-shanghai.aliyuncs.com/27965.jpg']
+        this.list = ['https://cdn.experienceoz.com.au/assets/organisation/8856/banner/74972_mobile.jpg', 'https://cdn.experienceoz.com.au/assets/organisation/4926/banner/60841_mobile.jpg','https://cdn.experienceoz.com.au/assets/organisation/4914/banner/59847_mobile.jpg']
       }, 20)
     }, 
     methods: {
-      test () {
-        console.log('yes')
-      },
-      hello () {
-        console.log('hello')
-      }
+      // test () {
+      //   console.log('yes')
+      // },
+      // hello () {
+      //   console.log('hello')
+      // }
     }
   }
 </script>

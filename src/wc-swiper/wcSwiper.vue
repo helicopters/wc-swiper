@@ -29,7 +29,7 @@
 		},
 		props: {
 			duration: {
-				default: 500 // 默认一次滑动的事件. 
+				default: 500 
 			},
 			interval: {
 				default: 2500
@@ -47,36 +47,20 @@
 		methods: {
 			init () {
 				var that = this;
-				// 获取 swiper 容器, 主要是为了在它上面绑定事件. 
 				var swiperContainer = document.querySelector('.wc-swiper-container');
-
 				var swiper = document.querySelector('.wc-swiper-box');
 				var swiperWidth = swiper.clientWidth;
-
 				var slides = toArray(swiper.children);
 				var slidesNumber = slides.length;
-
 				var currentSlide = 0;
-
-				// 为了渲染 pagination 而存在的一句话
 				this.slides = slidesNumber;
-
-				// 用户配置选项. 
 				var config = {
 				    interval: this.interval,
 				    duration: this.duration
 				}
 				var timer = null;
 				var pos = {};
-
-
-				var moving = false;
-				// 用户触发的滑动, 松开之后以什么 transtion-duration 进行改变. 
-				// var userDuration = 360;
-				// 以用户自己设置的 duration 的 1/2 作为最终时间. 
-				var userDuration = this.duration/2;
-
-				// 用户需要滑动多少距离, 我们才认定需要换新的 slide
+				var userDuration = this.duration / 2;
 				var threshold = 100;
 				function toArray(arraylike) {
 				    return Array.prototype.slice.call(arraylike);
@@ -90,31 +74,23 @@
 				function getLocation() {
 				    return -(swiperWidth * currentSlide);
 				}
-
-				function append () {
-					if (slides.length) {
-					    var head = slides[0].cloneNode(slides[0], true);
-					    var tail = slides[slidesNumber - 1].cloneNode(slides[slidesNumber - 1], true);
-
-					    swiper.appendChild(head);
-					    swiper.insertBefore(tail, slides[0]);						
-					}
+				function append() {
+				    if (slides.length) {
+				        var head = slides[0].cloneNode(slides[0], true);
+				        var tail = slides[slidesNumber - 1].cloneNode(slides[slidesNumber - 1], true);
+				        swiper.appendChild(head);
+				        swiper.insertBefore(tail, slides[0]);
+				    }
 				}
-
-				// transitionend 的 handler
+				// transition end 
 				function handler() {
-					// 如果当前滑动到最后一个
 				    if (currentSlide == slidesNumber - 1) {
 				        currentSlide = 0;
 				        transitionDuration(0);
 				        currentSlide++;
 				        translateX(getLocation());
 				    }
-
-					// for pagination
-					that.currentSlide = currentSlide - 1;
-
-				    // 继续重新定时
+				    that.currentSlide = currentSlide - 1;
 				    timer = setTimeout(function() {
 				        clearTimeout(timer);
 				        transitionDuration(config.duration);
@@ -122,68 +98,63 @@
 				        translateX(getLocation());
 				    }, config.interval);
 				}
-
-				// touchstart handler
+				var id;
 				function s(e) {
-				    if (!moving) {
-				        moving = true;
-				        // 先清除定时器
-				        clearTimeout(timer);
-				        // 再解绑 transitionend 事件
-				        swiper.removeEventListener('transitionend', handler, false);
-				        // 然后设置 transition-duration = 0
-				        transitionDuration(0);
-				        // 最后重新定位一下.
-				        pos.clickX = e.changedTouches[0].pageX;
-				        pos.initX = swiper.getBoundingClientRect().left;
-				        translateX(pos.initX);
+				    if (currentSlide == slidesNumber - 1) {
+				        return;
 				    }
+				    let curId = e.changedTouches[0].identifier;
+				    if (id) {
+				        if (curId !== id) {
+				            return;
+				        }
+				    } else {
+				        id = e.changedTouches[0].identifier;
+				    }
+				    clearTimeout(timer);
+				    swiper.removeEventListener('transitionend', handler, false);
+				    transitionDuration(0);
+				    pos.clickX = e.changedTouches[0].pageX;
+				    pos.initX = swiper.getBoundingClientRect().left;
+				    translateX(pos.initX);
 				}
-
-				// touchmove handler
 				function m(e) {
-				    if (moving) {
-				    	// 让 swiper 跟随手指移动
-				        pos.moveX = e.changedTouches[0].pageX;
+				    if (currentSlide == slidesNumber - 1) {
+				        return;
+				    }
+				    let curId = e.changedTouches[0].identifier;
+				    if (id == curId) {
+				        pos.moveX = e.targetTouches[0].pageX;
 				        translateX(pos.initX - (pos.clickX - pos.moveX));
 				    }
 				}
-
-				// touchend handler
 				function e(e) {
-				    var distance;
-				    if (moving) {
-				        moving = false;
-
-				        // 计算出用户最终移动的位移
+				    if (currentSlide == slidesNumber - 1) {
+				        return;
+				    }
+				    let curId = e.changedTouches[0].identifier;
+				    if (id == curId) {
+				        id = undefined;
+				        var distance;
 				        pos.endX = e.changedTouches[0].pageX;
 				        distance = pos.clickX - pos.endX;
-				        // 反正先设置好 transition-duration.
 				        transitionDuration(userDuration);
 				        if (distance == 0) {
-				        	// 如果 distance=0, 说明用户仅仅是连续点击了两次, 我们不做任何
-				        	// 处理, 恢复原状即可.
 				            translateX(getLocation());
 				        } else {
-				        	// 如果位移小于我们设定的值, 可以直接让它恢复原状即可
 				            if (Math.abs(distance) < threshold) {
 				                translateX(getLocation());
 				            } else {
-				            	// 如果位移大于我们设定的值, 我们就要看下了
 				                if (distance > 0) {
 				                    currentSlide++;
 				                } else {
 				                    currentSlide--;
 				                }
-				                // boundary 是精华部分. 
 				                boundary();
 				            }
 				        }
-				        // for pagination
 				        that.currentSlide = currentSlide - 1;
-				        // 用户行为之后, 我们是要重新开启定时器的.
 				        timer = setTimeout(function() {
-				        	// 重新绑定 transitionend 事件.
 				            swiper.addEventListener('transitionend', handler, false);
 				            clearTimeout(timer);
 				            transitionDuration(config.duration);
@@ -193,86 +164,58 @@
 				    }
 				}
 
-				// 对于边界情况的判断. 
+				// 边界条件的处理。
 				function boundary() {
 				    var start = swiper.getBoundingClientRect().left;
 				    var distance = 0;
-
-				    // 如果当前是第 0 个
 				    if (currentSlide == 0) {
 				        distance = swiperWidth * (slidesNumber - 1) - (swiperWidth + start);
-				        
 				        currentSlide = slidesNumber - 2;
-
 				        transitionDuration(0);
 				        translateX(-distance);
-
-				        // ...
-				        setTimeout(function() {
-				            transitionDuration(userDuration);
-				            translateX(getLocation());
-				        }, 20);
 				    } else if (currentSlide == slidesNumber - 1) {
 				        distance = start + (swiperWidth * (slidesNumber - 2))
-				        
 				        currentSlide = 1;
-
 				        transitionDuration(0);
 				        translateX(distance);
-				        setTimeout(function() {
-				            transitionDuration(userDuration);
-				            translateX(getLocation());
-				        }, 20);
-				    } else {
-				        translateX(getLocation());
 				    }
+
+				    setTimeout(function() {
+				        transitionDuration(userDuration);
+				        translateX(getLocation());
+				    }, 1);
 				}
-
-				// 绑定 transitionend 事件.
 				swiper.addEventListener('transitionend', handler, false);
-
 				swiper.addEventListener('touchstart', s, false);
 				swiper.addEventListener('touchmove', m, false);
 				swiper.addEventListener('touchend', e, false);
 
-				// 为 swiper-container 绑定 touchmove 事件
-				// 注意这里不要绑定在 touchstart 上面, 因为这样会直接阻止掉 click 事件的触发
-				// 也就是说页面上的 a 标签不会跳转了以后. 
+				// 这个主要是为了防止滚动 swiper-container 的时候会让父元素跟着滚动.
 				swiperContainer.addEventListener('touchmove', function(e) {
-				    e.preventDefault();  // 防止在滑动的时候, 页面跟着滑动
+				    e.preventDefault();
 				}, false);
-
-				// 追加头尾元素
 				append();
-
-				// 重置 slides, slidesNumber -> 因为新增了 头尾
+				// 因为重新追加了 slide, 所以要重置 slides 和 slidesNumber.
 				slides = toArray(swiper.children);
 				slidesNumber = slides.length;
-
-				// 初始化, currentSlide = 1, 因为要忽略掉我们追加的 head
 				currentSlide = 1;
-				// 定位, 注意此时 transition-duration:0, 所以是瞬间定位过去, 没有 transition 效果
-				translateX(getLocation());
+				// 这个主要是为了 pagination的显示
+				this.currentSlide = currentSlide - 1;
 
-				// 启动定时器, 在指定时间之后, 滑动一下
+				translateX(getLocation());
+				// 启动定时器
 				timer = setTimeout(function() {
 				    currentSlide++;
-
-				    // 清除定时器
 				    clearTimeout(timer);
-
-				    // 设置 transition-duration
 				    transitionDuration(config.duration);
-				    // 定位
 				    translateX(getLocation());
 				}, config.interval);
 
-				// for pagination
-				this.currentSlide = currentSlide - 1;
+				
 
-			}, // end init
+			}, 
 
-		} // end methods
+		} 
 
 
 	}
