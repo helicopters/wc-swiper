@@ -58,21 +58,26 @@
 				var swiperWidth = swiper.clientWidth;
 				var slides = toArray(swiper.children);
 				var slidesNumber = slides.length;
-				var currentSlide = 0;
+				/*为了 pagination 显示设置的变量*/
 				this.slides = slidesNumber;
+				var currentSlide = 0;
+				
 				var config = {
 				    interval: this.interval,
 				    duration: this.duration
 				}
 				var timer = null;
 				var pos = {};
+				/*用户手动滑动时, 松手恢复原状的时间*/
 				var userDuration = 270;
+				/*用户移动多少距离才变换 slide*/
 				var threshold = 100;
 				var id;
 
 				function toArray(arraylike) {
 				    return Array.prototype.slice.call(arraylike);
 				}
+
 
 				function translateX(v) {
 				    swiper.style.transform = 'translate3d(' + v + 'px, 0,0)';
@@ -86,6 +91,7 @@
 				    return -(swiperWidth * currentSlide);
 				}
 
+				/* 添加 head, tail slide */
 				function append() {
 				    var head = slides[0].cloneNode(slides[0], true);
 				    var tail = slides[slidesNumber - 1].cloneNode(slides[slidesNumber - 1], true);
@@ -93,6 +99,7 @@
 				    swiper.insertBefore(tail, slides[0]);
 				}
 
+				/* transitionend event handler */
 				function handler() {
 				    if (currentSlide == slidesNumber - 1) {
 				        currentSlide = 0;
@@ -109,6 +116,7 @@
 				    }, config.interval);
 				}
 
+				/*touchstart*/
 				function s(e) {
 				    var curId = T.id(T.changedTouches(e)[0]);
 				    if (id) {
@@ -119,6 +127,7 @@
 				        id = curId;
 				    }
 				    clearTimeout(timer);
+				    /*为了防止用户滑动松开触发 transitionend */
 				    swiper.removeEventListener('transitionend', handler, false);
 				    transitionDuration(0);
 				    pos.initX = swiper.getBoundingClientRect().left;
@@ -126,6 +135,7 @@
 				    translateX(pos.initX);
 				}
 
+				/*touchmove*/
 				function m(e) {
 				    var curId = T.id(T.changedTouches(e)[0]);
 				    if (id == curId) {
@@ -134,6 +144,7 @@
 				    }
 				}
 
+				/*touchend*/
 				function e(e) {
 				    var distance;
 				    var curId = T.id(T.changedTouches(e, 0));
@@ -142,12 +153,15 @@
 				        pos.endX = T.x(T.changedTouches(e, 0));
 				        distance = pos.clickX - pos.endX;
 				        transitionDuration(userDuration);
+				        /*如果用户仅仅在同一个地方点击两次*/
 				        if (distance == 0) {
 				            translateX(getLocation());
 				        } else {
+				        	/*如果用户移动距离小于变更距离*/
 				            if (Math.abs(distance) < threshold) {
 				                translateX(getLocation());
 				            } else {
+				            	/*先判断方向*/
 				                if (distance > 0) {
 				                    currentSlide++;
 				                } else {
@@ -157,6 +171,7 @@
 				            }
 				        }
 				        that.currentSlide = currentSlide - 1;
+				        /*重新启动定时器*/
 				        timer = setTimeout(function() {
 				            swiper.addEventListener('transitionend', handler, false);
 				            clearTimeout(timer);
@@ -167,6 +182,7 @@
 				    }
 				}
 
+				/*用户滑动到边界的时候的判断*/
 				function boundary() {
 				    var start = swiper.getBoundingClientRect().left;
 				    var distance = 0;
@@ -177,10 +193,12 @@
 				            translateX(getLocation());
 				        }, 10);
 				    }
+
 				    if (currentSlide == 0) {
+				    	/*如果滑动到第一个*/
 				        distance = swiperWidth * (slidesNumber - 1) - (swiperWidth + start);
-				        var xx = Math.abs(start);
-				        var n = Math.floor(xx / swiperWidth);
+				        
+				        var n = Math.floor(Math.abs(start) / swiperWidth);
 				        if (n === currentSlide) {
 				            currentSlide = slidesNumber - 2;
 				            transitionDuration(0);
@@ -188,13 +206,14 @@
 				            delay();
 				        } else {
 				            currentSlide = n;
-				            transitionDuration(userDuration);
+				            
 				            translateX(getLocation())
 				        }
 				    } else if (currentSlide == slidesNumber - 1) {
+				    	/*如果是最后一个*/
 				        distance = start + (swiperWidth * (slidesNumber - 2))
-				        var xx = Math.abs(start);
-				        var n = Math.ceil(xx / swiperWidth);
+				        
+				        var n = Math.ceil(Math.abs(start) / swiperWidth);
 				        if (n === currentSlide) {
 				            currentSlide = 1;
 				            transitionDuration(0);
@@ -202,7 +221,7 @@
 				            delay();
 				        } else {
 				            currentSlide = n;
-				            transitionDuration(userDuration);
+				            
 				            translateX(getLocation())
 				        }
 				    } else {
