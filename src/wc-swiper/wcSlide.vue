@@ -1,5 +1,10 @@
 <style lang="less">
 .wc-slide {
+	-webkit-transform: translate3d(0px, 0, 0);
+	-moz-transform: translate3d(0px, 0, 0);
+	-o-transform: translate(0px, 0px);
+	-ms-transform: translate3d(0px, 0, 0);
+	transform: translate3d(0px, 0, 0);
 	height: 100%;
     width: 100%;
     flex-shrink: 0;
@@ -23,7 +28,7 @@
 				this.$emit('click');
 			},
 			start () {
-				this.$emit('touchstart')
+				this.$emit('touchstart');
 			}
 		}
 	}

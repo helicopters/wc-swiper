@@ -1,4 +1,10 @@
 <style>
+
+
+body {
+  -webkit-transform: translate3d(0, 0, 0);
+}
+
     html, body {
       height: 100%;
       font-size: 16px;
@@ -59,7 +65,7 @@
   <div id="app">
       <div class="header" v-if="list.length">
 
-        <wc-swiper :duration="2000" :interval="2000">
+        <wc-swiper :duration="300" :interval="2000">
           <wc-slide class="slide a">
               1
           </wc-slide>
@@ -83,15 +89,9 @@
     name: 'app',
     data () {
       return {
-        list: [],
+        list: [1],
         done: false
       }
-    },
-    mounted () {
-      setTimeout(()=>{
-        this.done = true;
-        this.list = ['https://cdn.experienceoz.com.au/assets/organisation/8856/banner/74972_mobile.jpg', 'https://cdn.experienceoz.com.au/assets/organisation/4926/banner/60841_mobile.jpg','https://cdn.experienceoz.com.au/assets/organisation/4914/banner/59847_mobile.jpg']
-      }, 20)
     }
   }
 </script>

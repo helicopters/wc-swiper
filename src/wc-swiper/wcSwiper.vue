@@ -1,16 +1,21 @@
 <style lang="less">
 .wc-swiper-container {
-	position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 .wc-swiper-box {
-    height: 100%;
-    width: 100%;
-    display: flex;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  /*防止滑动闪烁的*/
+  -webkit-transform: translate3d(0px, 0, 0);
+  -moz-transform: translate3d(0px, 0, 0);
+  -o-transform: translate(0px, 0px);
+  -ms-transform: translate3d(0px, 0, 0);
+  transform: translate3d(0px, 0, 0);
 }
-
 </style>
 <template>
     <div class="wc-swiper-container">
@@ -61,31 +66,33 @@
 				}
 				var timer = null;
 				var pos = {};
-				var userDuration = Math.min(this.duration / 2, 300);
+				var userDuration = 270;
 				var threshold = 100;
 				var id;
 
 				function toArray(arraylike) {
 				    return Array.prototype.slice.call(arraylike);
 				}
+
 				function translateX(v) {
-				    swiper.style.transform = 'translateX(' + v + 'px)';
+				    swiper.style.transform = 'translate3d(' + v + 'px, 0,0)';
 				}
+
 				function transitionDuration(v) {
 				    swiper.style.transitionDuration = v + 'ms';
 				}
+
 				function getLocation() {
 				    return -(swiperWidth * currentSlide);
 				}
+
 				function append() {
-				    if (slides.length) {
-				        var head = slides[0].cloneNode(slides[0], true);
-				        var tail = slides[slidesNumber - 1].cloneNode(slides[slidesNumber - 1], true);
-				        swiper.appendChild(head);
-				        swiper.insertBefore(tail, slides[0]);
-				    }
+				    var head = slides[0].cloneNode(slides[0], true);
+				    var tail = slides[slidesNumber - 1].cloneNode(slides[slidesNumber - 1], true);
+				    swiper.appendChild(head);
+				    swiper.insertBefore(tail, slides[0]);
 				}
-				// transition end 
+
 				function handler() {
 				    if (currentSlide == slidesNumber - 1) {
 				        currentSlide = 0;
@@ -101,11 +108,9 @@
 				        translateX(getLocation());
 				    }, config.interval);
 				}
-				
+
 				function s(e) {
-
 				    var curId = T.id(T.changedTouches(e)[0]);
-
 				    if (id) {
 				        if (curId !== id) {
 				            return;
@@ -113,40 +118,28 @@
 				    } else {
 				        id = curId;
 				    }
-
-				    if (currentSlide == slidesNumber - 1) {
-				        return;
-				    }
-
 				    clearTimeout(timer);
 				    swiper.removeEventListener('transitionend', handler, false);
 				    transitionDuration(0);
-
 				    pos.initX = swiper.getBoundingClientRect().left;
 				    pos.clickX = T.x(T.changedTouches(e, 0));
 				    translateX(pos.initX);
 				}
-				function m(e) {
-				    if (currentSlide == slidesNumber - 1) {
-				        return;
-				    }
 
+				function m(e) {
 				    var curId = T.id(T.changedTouches(e)[0]);
 				    if (id == curId) {
 				        pos.moveX = T.x(T.changedTouches(e, 0))
 				        translateX(pos.initX - (pos.clickX - pos.moveX));
 				    }
 				}
+
 				function e(e) {
-				    if (currentSlide == slidesNumber - 1) {
-				        return;
-				    }
 				    var distance;
-				    var curId = T.id(T.changedTouches(e,0));
+				    var curId = T.id(T.changedTouches(e, 0));
 				    if (id == curId) {
 				        id = undefined;
-
-				        pos.endX = T.x(T.changedTouches(e,0));
+				        pos.endX = T.x(T.changedTouches(e, 0));
 				        distance = pos.clickX - pos.endX;
 				        transitionDuration(userDuration);
 				        if (distance == 0) {
@@ -174,41 +167,52 @@
 				    }
 				}
 
-				// 边界条件的处理。
 				function boundary() {
 				    var start = swiper.getBoundingClientRect().left;
 				    var distance = 0;
 
-				    function delay () {
-					    setTimeout(function() {
-					        transitionDuration(userDuration);
-					        translateX(getLocation());
-					    }, 20);				    	
+				    function delay() {
+				        setTimeout(function() {
+				            transitionDuration(userDuration);
+				            translateX(getLocation());
+				        }, 10);
 				    }
-
 				    if (currentSlide == 0) {
 				        distance = swiperWidth * (slidesNumber - 1) - (swiperWidth + start);
-				        currentSlide = slidesNumber - 2;
-				        transitionDuration(0);
-				        translateX(-distance);
-				        delay();
-
+				        var xx = Math.abs(start);
+				        var n = Math.floor(xx / swiperWidth);
+				        if (n === currentSlide) {
+				            currentSlide = slidesNumber - 2;
+				            transitionDuration(0);
+				            translateX(-distance);
+				            delay();
+				        } else {
+				            currentSlide = n;
+				            transitionDuration(userDuration);
+				            translateX(getLocation())
+				        }
 				    } else if (currentSlide == slidesNumber - 1) {
-				    	
 				        distance = start + (swiperWidth * (slidesNumber - 2))
-				        currentSlide = 1;
-				        transitionDuration(0);
-				        translateX(distance);
-				        delay();
+				        var xx = Math.abs(start);
+				        var n = Math.ceil(xx / swiperWidth);
+				        if (n === currentSlide) {
+				            currentSlide = 1;
+				            transitionDuration(0);
+				            translateX(distance);
+				            delay();
+				        } else {
+				            currentSlide = n;
+				            transitionDuration(userDuration);
+				            translateX(getLocation())
+				        }
 				    } else {
-				    	translateX(getLocation());
+				        translateX(getLocation());
 				    }
 				}
 				swiper.addEventListener('transitionend', handler, false);
 				swiper.addEventListener('touchstart', s, false);
 				swiper.addEventListener('touchmove', m, false);
 				swiper.addEventListener('touchend', e, false);
-
 				/* 这个主要是为了防止滚动 swiper-container 的时候会让父元素跟着滚动.*/
 				swiperContainer.addEventListener('touchmove', function(e) {
 				    e.preventDefault();
@@ -218,18 +222,15 @@
 				slides = toArray(swiper.children);
 				slidesNumber = slides.length;
 				currentSlide = 1;
-				// 这个主要是为了 pagination的显示
 				this.currentSlide = currentSlide - 1;
-
 				translateX(getLocation());
-				// 启动定时器
 				timer = setTimeout(function() {
 				    currentSlide++;
 				    clearTimeout(timer);
 				    transitionDuration(config.duration);
 				    translateX(getLocation());
 				}, config.interval);
-			}  // end init
-		} // end mounted
-	} 
+			} /*end init*/
+		} /*end methods*/
+	} /*end export*/
 </script>
