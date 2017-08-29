@@ -22,6 +22,7 @@
 </template>
 <script>
 	import wcPagination from './wcPagination'
+	import T from './lib/touch'
 	export default {
 		name: 'wcSwiper',
 		components: {
@@ -102,23 +103,27 @@
 				}
 				
 				function s(e) {
-				    if (currentSlide == slidesNumber - 1) {
-				        return;
-				    }
 
-				    var curId = e.changedTouches[0].identifier;
+				    var curId = T.id(T.changedTouches(e)[0]);
+
 				    if (id) {
 				        if (curId !== id) {
 				            return;
 				        }
 				    } else {
-				        id = e.changedTouches[0].identifier;
+				        id = curId;
 				    }
+
+				    if (currentSlide == slidesNumber - 1) {
+				        return;
+				    }
+
 				    clearTimeout(timer);
 				    swiper.removeEventListener('transitionend', handler, false);
 				    transitionDuration(0);
-				    pos.clickX = e.changedTouches[0].pageX;
+
 				    pos.initX = swiper.getBoundingClientRect().left;
+				    pos.clickX = T.x(T.changedTouches(e, 0));
 				    translateX(pos.initX);
 				}
 				function m(e) {
@@ -126,9 +131,9 @@
 				        return;
 				    }
 
-				    var curId = e.changedTouches[0].identifier;
+				    var curId = T.id(T.changedTouches(e)[0]);
 				    if (id == curId) {
-				        pos.moveX = e.targetTouches[0].pageX;
+				        pos.moveX = T.x(T.changedTouches(e, 0))
 				        translateX(pos.initX - (pos.clickX - pos.moveX));
 				    }
 				}
@@ -137,11 +142,11 @@
 				        return;
 				    }
 				    var distance;
-				    var curId = e.changedTouches[0].identifier;
+				    var curId = T.id(T.changedTouches(e,0));
 				    if (id == curId) {
 				        id = undefined;
-				        
-				        pos.endX = e.changedTouches[0].pageX;
+
+				        pos.endX = T.x(T.changedTouches(e,0));
 				        distance = pos.clickX - pos.endX;
 				        transitionDuration(userDuration);
 				        if (distance == 0) {
@@ -173,34 +178,43 @@
 				function boundary() {
 				    var start = swiper.getBoundingClientRect().left;
 				    var distance = 0;
+
+				    function delay () {
+					    setTimeout(function() {
+					        transitionDuration(userDuration);
+					        translateX(getLocation());
+					    }, 20);				    	
+				    }
+
 				    if (currentSlide == 0) {
 				        distance = swiperWidth * (slidesNumber - 1) - (swiperWidth + start);
 				        currentSlide = slidesNumber - 2;
 				        transitionDuration(0);
 				        translateX(-distance);
+				        delay();
+
 				    } else if (currentSlide == slidesNumber - 1) {
+				    	
 				        distance = start + (swiperWidth * (slidesNumber - 2))
 				        currentSlide = 1;
 				        transitionDuration(0);
 				        translateX(distance);
+				        delay();
+				    } else {
+				    	translateX(getLocation());
 				    }
-
-				    setTimeout(function() {
-				        transitionDuration(userDuration);
-				        translateX(getLocation());
-				    }, 1);
 				}
 				swiper.addEventListener('transitionend', handler, false);
 				swiper.addEventListener('touchstart', s, false);
 				swiper.addEventListener('touchmove', m, false);
 				swiper.addEventListener('touchend', e, false);
 
-				// 这个主要是为了防止滚动 swiper-container 的时候会让父元素跟着滚动.
+				/* 这个主要是为了防止滚动 swiper-container 的时候会让父元素跟着滚动.*/
 				swiperContainer.addEventListener('touchmove', function(e) {
 				    e.preventDefault();
 				}, false);
 				append();
-				// 因为重新追加了 slide, 所以要重置 slides 和 slidesNumber.
+				/* 因为重新追加了 slide, 所以要重置 slides 和 slidesNumber. */
 				slides = toArray(swiper.children);
 				slidesNumber = slides.length;
 				currentSlide = 1;
