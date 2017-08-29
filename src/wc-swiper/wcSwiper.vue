@@ -61,7 +61,7 @@
 				}
 				var timer = null;
 				var pos = {};
-				var userDuration = this.duration / 2;
+				var userDuration = Math.min(this.duration / 2, 300);
 				var threshold = 100;
 				var id;
 

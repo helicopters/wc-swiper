@@ -22,8 +22,6 @@ Vue.use(wcSwiper);
 
 或者可以在单个组件中引入:
 ```javascript
-Demo.vue:
-
 import {wcSwiper, wcSlide} from 'wc-swiper'
 
 export default {
@@ -38,7 +36,7 @@ export default {
 ```html
 <wc-swiper>
 	<wc-slide v-for="(v, k) in list" :key="k">
-		// 这里放具体类容
+		// 这里放具体内容
 	</wc-slide>
 </wc-swiper>
 ```
@@ -69,7 +67,3 @@ pagination 的实现结构:
 	.wc-dot.wc-dot-active
 ```
 覆盖上面 3 个class 即可.
-
-
-## 实现步骤
-

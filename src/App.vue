@@ -59,7 +59,7 @@
   <div id="app">
       <div class="header" v-if="list.length">
 
-        <wc-swiper :duration="300" :interval="2000">
+        <wc-swiper :duration="2000" :interval="2000">
           <wc-slide class="slide a">
               1
           </wc-slide>
@@ -73,21 +73,11 @@
               3
           </wc-slide>
 
-
-
         </wc-swiper>
-
-
-
-        
       </div>
-
-
   </div>
 </template>
 <script>
-
-  // import {wcSwiper, wcSlide} from './wc-swiper'
 
   export default {
     name: 'app',
@@ -97,23 +87,11 @@
         done: false
       }
     },
-    // components: {
-    //   wcSlide,
-    //   wcSwiper
-    // },
     mounted () {
       setTimeout(()=>{
         this.done = true;
         this.list = ['https://cdn.experienceoz.com.au/assets/organisation/8856/banner/74972_mobile.jpg', 'https://cdn.experienceoz.com.au/assets/organisation/4926/banner/60841_mobile.jpg','https://cdn.experienceoz.com.au/assets/organisation/4914/banner/59847_mobile.jpg']
       }, 20)
-    }, 
-    methods: {
-      // test () {
-      //   console.log('yes')
-      // },
-      // hello () {
-      //   console.log('hello')
-      // }
     }
   }
 </script>
