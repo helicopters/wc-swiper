@@ -10,10 +10,6 @@
   width: 100%;
   display: flex;
   /*防止滑动闪烁的*/
-  -webkit-transform: translate3d(0px, 0, 0);
-  -moz-transform: translate3d(0px, 0, 0);
-  -o-transform: translate(0px, 0px);
-  -ms-transform: translate3d(0px, 0, 0);
   transform: translate3d(0px, 0, 0);
 }
 </style>
