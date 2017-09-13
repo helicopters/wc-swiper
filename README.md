@@ -20,18 +20,6 @@ import 'wc-swiper/style.css'
 Vue.use(wcSwiper);
 ```
 
-或者可以在单个组件中引入:
-```javascript
-import {wcSwiper, wcSlide} from 'wc-swiper'
-
-export default {
-	components: {
-		wcSwiper,
-		wcSlide
-	}
-}
-```
-
 
 ```html
 <wc-swiper>

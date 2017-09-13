@@ -36,7 +36,7 @@ rm(path.resolve(process.cwd() , name), err => {
             cp('-R', src + '/*', target);
 
             cp('-R', vueFiles, target);
-            cp('-R', vueLib, target);
+            // cp('-R', vueLib, target);
 
             console.log();
             console.log(chalk.green.bold('> Compile Successed'));
