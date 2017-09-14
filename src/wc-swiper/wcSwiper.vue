@@ -12,9 +12,24 @@
   /*防止滑动闪烁的*/
   transform: translate3d(0px, 0, 0);
 }
+.info {
+	position: absolute;
+	top:0;
+	background:red;
+	height: 100px;
+	width: 100px;
+	z-index: 1000;
+}
 </style>
 <template>
     <div class="wc-swiper-container">
+		
+		<div class="info">
+			{{touches}}
+			<br/>
+			{{info}}
+		</div>
+
         <div class="wc-swiper-box">
 			<slot/>
         </div>
@@ -22,8 +37,15 @@
     </div>
 </template>
 <script>
+
+// function toArray(arraylike) {
+//     return Array.prototype.slice.call(arraylike);
+// }
+
+
+
 	import wcPagination from './wcPagination'
-	import T from './lib/touch'
+	// import T from './lib/touch'
 	export default {
 		name: 'wcSwiper',
 		components: {
@@ -46,7 +68,12 @@
 		data () {
 			return {
 				slides: 0,
-				currentSlide: 0
+				currentSlide: 0,
+				len: 0,
+				activeID: '',
+
+				touches: 0,
+				info: ''
 			}
 		},
 		mounted () {
@@ -122,14 +149,31 @@
 				/*touchstart*/
 				function s(e) {
 
-				    var curId = T.id(T.changedTouches(e)[0]);
-				    if (id) {
-				        if (curId !== id) {
-				            return;
-				        }
-				    } else {
-				        id = curId;
-				    }
+
+					// that.touches = e.changedTouches.length;
+					console.log(e)
+
+					var len = e.touches.length;
+					var cur = len - 1;
+					that.len = len;
+
+					// that.touches = 'cur' + cur;
+
+
+
+				    // var curId = T.id(T.changedTouches(e)[cur]);
+				    that.activeID = toArray(e.changedTouches)[0].identifier;
+
+				    that.touches = '现在的' + that.activeID;
+				    // that.info = id + '|' + curId; 
+
+				    // if (id) {
+				    //     if (curId !== id) {
+				    //         return;
+				    //     }
+				    // } else {
+				    //     id = curId;
+				    // }
 
 
 				    clearTimeout(timer);
@@ -137,15 +181,33 @@
 				    swiper.removeEventListener('transitionend', transitionendHandler, false);
 				    transitionDuration(0);
 				    pos.initX = swiper.getBoundingClientRect().left;
-				    pos.clickX = T.x(T.changedTouches(e, 0));
+				    // pos.clickX = T.x(T.touches(e, 0));
+				    pos.clickX = toArray(e.touches)[cur].pageX;
 				    translateX(pos.initX);
 				}
 
 				/*touchmove*/
 				function m(e) {
-				    var curId = T.id(T.changedTouches(e)[0]);
-				    if (id == curId) {
-				        pos.moveX = T.x(T.changedTouches(e, 0))
+				    // var curId = T.id(T.touches(e)[0]);
+
+
+					var len = e.touches.length;
+					var cur = len - 1;
+
+					that.len = len;
+
+					// that.touches = 'curcur' + cur;
+				    // var curId = T.id(T.touches(e)[cur]);
+				    // var curId = toArray(e.touches)[cur].identifier;
+
+
+
+
+				    if (that.activeID) {
+				        // pos.moveX = T.x(T.touches(e, 0))
+				        pos.moveX = toArray(e.touches)[cur].pageX;
+
+				        that.info = pos.moveX;
 				        translateX(Math.round(pos.initX - (pos.clickX - pos.moveX)));
 				    }
 				}
@@ -153,10 +215,41 @@
 				/*touchend*/
 				function e(e) {
 				    var distance;
-				    var curId = T.id(T.changedTouches(e, 0));
-				    if (id == curId) {
-				        id = undefined;
-				        pos.endX = T.x(T.changedTouches(e, 0));
+				    // var curId = T.id(T.changedTouches(e, 0));
+
+				    transitionDuration(0);
+
+				    // 当前松开的
+				   	
+
+					var len = e.touches.length;
+					var cur = len - 1;
+
+					var curId = toArray(e.changedTouches)[0].identifier;
+
+
+					// alert(that.len)
+					// if (that)
+					// that.touches = curId + 'uuu' + that.activeID;
+					that.info = '送开的' + curId;
+
+					if (curId == that.activeID) {
+					// alert(1)
+					that.activeID = undefined;
+
+					that.touches = '相同的' + curId + 'xxx' + that.activeID
+					// console.log(e.changedTouches)
+				    // var curId = T.id(T.changedTouches(e)[0]);
+
+				    
+
+				    // that.info = curId + 'xxx' +  that.activeID;
+				    // alert(id + 'xxx' + curId)
+
+				    // if (id == curId) {
+				        // id = undefined;
+				        // pos.endX = T.x(T.changedTouches(e, 0));
+				        pos.endX = toArray(e.changedTouches)[0].pageX;
 				        distance = pos.clickX - pos.endX;
 				        transitionDuration(userDuration);
 				        /*如果用户仅仅在同一个地方点击两次*/
