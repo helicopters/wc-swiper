@@ -73,7 +73,7 @@
 				/*用户手动滑动时, 松手恢复原状的时间*/
 				var userDuration = 270;
 				/*用户移动多少距离才变换 slide*/
-				var threshold = 100;
+				var threshold = 50;
 				var id;
 
 				function toArray(arraylike) {
@@ -121,6 +121,7 @@
 
 				/*touchstart*/
 				function s(e) {
+
 				    var curId = T.id(T.changedTouches(e)[0]);
 				    if (id) {
 				        if (curId !== id) {
@@ -129,6 +130,8 @@
 				    } else {
 				        id = curId;
 				    }
+
+
 				    clearTimeout(timer);
 				    /*为了防止用户滑动松开触发 transitionend */
 				    swiper.removeEventListener('transitionend', transitionendHandler, false);
@@ -143,7 +146,7 @@
 				    var curId = T.id(T.changedTouches(e)[0]);
 				    if (id == curId) {
 				        pos.moveX = T.x(T.changedTouches(e, 0))
-				        translateX(pos.initX - (pos.clickX - pos.moveX));
+				        translateX(Math.round(pos.initX - (pos.clickX - pos.moveX)));
 				    }
 				}
 
