@@ -27,16 +27,20 @@ Vue.use(wcSwiper);
 		// 这里放具体内容
 	</wc-slide>
 </wc-swiper>
+
+备注:
+wc-swiper 上面有一些配置选项:
+
+duration: 配置每一次滑动持续的时间  // 默认 500ms
+interval: 配置两次滑动的间隔时间    // 默认 2500ms
+pagination: 是否显示 pagination   // 默认 true
+autoplay: 是否自动轮播            // 默认 true
+
+
 ```
 
 ## 使用说明
-* wc-swiper 上存在两个配置选项, duration & interval.
-```javascript
-duration: 配置每一次滑动持续的时间
-interval: 配置两次滑动的间隔时间
-```
-
-* 控制 swiper 的样式: 给 wc-swiper 设置样式即可. (wc-swiper 的默认高度为 200px).
+* wc-swiper 默认高度为 100%, 实际有多高, 取决于你给 wc-swiper 设置的高度, 或者父元素的高度. 
 
 * 异步数据的渲染: 建议在 wc-swiper 上面添加 v-if 判断条件, 比如 v-if="slidesList.length",
 以防止在数据返回之前, swiper 已经渲染执行完毕. 
@@ -55,3 +59,25 @@ pagination 的实现结构:
 	.wc-dot.wc-dot-active
 ```
 覆盖上面 3 个class 即可.
+
+
+## BUG
+有一个很奇特的bug, 不是必现. 重现步骤:
+第一次进入, 假设我们总计有 4 个 slide, init 的时候显示 1, 滑动到 4 的时候 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

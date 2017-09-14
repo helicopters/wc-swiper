@@ -18,7 +18,7 @@
         <div class="wc-swiper-box">
 			<slot/>
         </div>
-        <wc-pagination :slides="slides" :cur="currentSlide"/>
+        <wc-pagination :slides="slides" :cur="currentSlide" v-if="pagination"/>
     </div>
 </template>
 <script>
@@ -35,6 +35,12 @@
 			},
 			interval: {
 				default: 2500
+			},
+			pagination: {
+				default: true
+			},
+			autoplay: {
+				default: true
 			}
 		},
 		data () {
@@ -95,21 +101,22 @@
 				    swiper.insertBefore(tail, slides[0]);
 				}
 
-				/* transitionend event handler */
-				function handler() {
-				    if (currentSlide == slidesNumber - 1) {
-				        currentSlide = 0;
-				        transitionDuration(0);
-				        currentSlide++;
-				        translateX(getLocation());
-				    }
-				    that.currentSlide = currentSlide - 1;
-				    timer = setTimeout(function() {
-				        clearTimeout(timer);
-				        transitionDuration(config.duration);
-				        currentSlide++;
-				        translateX(getLocation());
-				    }, config.interval);
+				function transitionendHandler() {
+					if (that.autoplay) {
+					    if (currentSlide == slidesNumber - 1) {
+					        currentSlide = 0;
+					        transitionDuration(0);
+					        currentSlide++;
+					        translateX(getLocation());
+					    }
+					    that.currentSlide = currentSlide - 1;
+					    timer = setTimeout(function() {
+					        clearTimeout(timer);
+					        transitionDuration(config.duration);
+					        currentSlide++;
+					        translateX(getLocation());
+					    }, config.interval);						
+					}
 				}
 
 				/*touchstart*/
@@ -124,7 +131,7 @@
 				    }
 				    clearTimeout(timer);
 				    /*为了防止用户滑动松开触发 transitionend */
-				    swiper.removeEventListener('transitionend', handler, false);
+				    swiper.removeEventListener('transitionend', transitionendHandler, false);
 				    transitionDuration(0);
 				    pos.initX = swiper.getBoundingClientRect().left;
 				    pos.clickX = T.x(T.changedTouches(e, 0));
@@ -168,13 +175,17 @@
 				        }
 				        that.currentSlide = currentSlide - 1;
 				        /*重新启动定时器*/
-				        timer = setTimeout(function() {
-				            swiper.addEventListener('transitionend', handler, false);
-				            clearTimeout(timer);
-				            transitionDuration(config.duration);
-				            currentSlide++;
-				            translateX(getLocation());
-				        }, config.interval);
+
+				        if (that.autoplay) {
+					        timer = setTimeout(function() {
+					            swiper.addEventListener('transitionend', transitionendHandler, false);
+					            clearTimeout(timer);
+					            transitionDuration(config.duration);
+					            currentSlide++;
+					            translateX(getLocation());
+					        }, config.interval);				        	
+				        }
+
 				    }
 				}
 
@@ -224,7 +235,7 @@
 				        translateX(getLocation());
 				    }
 				}
-				swiper.addEventListener('transitionend', handler, false);
+				swiper.addEventListener('transitionend', transitionendHandler, false);
 				swiper.addEventListener('touchstart', s, false);
 				swiper.addEventListener('touchmove', m, false);
 				swiper.addEventListener('touchend', e, false);
@@ -239,12 +250,15 @@
 				currentSlide = 1;
 				this.currentSlide = currentSlide - 1;
 				translateX(getLocation());
-				timer = setTimeout(function() {
-				    currentSlide++;
-				    clearTimeout(timer);
-				    transitionDuration(config.duration);
-				    translateX(getLocation());
-				}, config.interval);
+
+				if (this.autoplay) {
+					timer = setTimeout(function() {
+					    currentSlide++;
+					    clearTimeout(timer);
+					    transitionDuration(config.duration);
+					    translateX(getLocation());
+					}, config.interval);					
+				}
 			} /*end init*/
 		} /*end methods*/
 	} /*end export*/

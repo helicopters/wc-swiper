@@ -65,7 +65,7 @@ body {
   <div id="app">
       <div class="header" v-if="list.length">
 
-        <wc-swiper :duration="300" :interval="2000">
+        <wc-swiper :duration="300" :interval="2000" :pagination="true" :autoplay="false">
           <wc-slide class="slide a">
               1
           </wc-slide>
