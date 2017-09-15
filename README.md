@@ -127,4 +127,5 @@ pagination: 是否显示 dots | default: true
 
 想着可以在每次滑动之前和之后, 加上hook函数
 
+可以支持点击分页的时候, 可以跳转到指定的 slide.
 

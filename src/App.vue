@@ -14,7 +14,7 @@
       width: 100%;
     }
     .header {
-      height: 250px;
+      height: 100%;
     }
 
     .dot {
@@ -36,6 +36,12 @@
 .c {
   background: #495a90;
 }
+.d {
+  background: #879282;
+}
+.e {
+  background: #827893;
+}
 </style>
 <template>
   <div id="app">
@@ -54,6 +60,17 @@
           <wc-slide class="slide c">
               3
           </wc-slide>
+
+          <wc-slide class="slide d">
+              4
+          </wc-slide>
+
+          <wc-slide class="slide e">
+              5
+          </wc-slide>
+
+
+
 
         </wc-swiper>
       </div>

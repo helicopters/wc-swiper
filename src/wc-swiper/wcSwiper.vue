@@ -122,6 +122,11 @@
 				    var cur = e.touches.length - 1;
 				    
 				    that.activeID = toArray(e.changedTouches)[0].identifier;
+
+				    if (that.activeID === 0) {
+				    	that.activeID = 'desktop';
+				    }
+
 				    clearTimeout(timer);
 				    /*为了防止用户滑动松开触发 transitionend */
 				    swiper.removeEventListener('transitionend', transitionendHandler, false);
@@ -147,7 +152,8 @@
 				    
 				    var cur = e.touches.length - 1;
 				    var curId = toArray(e.changedTouches)[0].identifier;
-				    if (curId == that.activeID) {
+
+				    if (curId == that.activeID || that.activeID == 'desktop') {
 				        that.activeID = undefined;
 				        pos.endX = toArray(e.changedTouches)[0].pageX;
 				        distance = pos.clickX - pos.endX;
