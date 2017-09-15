@@ -119,3 +119,12 @@ pagination: 是否显示 dots | default: true
 	.wc-dot
 	.wc-dot.wc-dot-active
 ```
+
+## Others
+想着让用户自己提供 pagination 组件, 样式想怎么调整就怎么调整.
+
+想着可以设置默认 slide, 不再始终是 1
+
+想着可以在每次滑动之前和之后, 加上hook函数
+
+
