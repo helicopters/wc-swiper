@@ -23,13 +23,6 @@
     </div>
 </template>
 <script>
-
-
-
-
-
-
-
 	import wcPagination from './wcPagination'
 	
 	export default {
@@ -53,13 +46,9 @@
 		},
 		data () {
 			return {
-				slides: 0,
-				currentSlide: 0,
-				len: 0,
 				activeID: '',
-
-				
-				
+				currentSlide: 0,
+				slides: 0
 			}
 		},
 		mounted () {
@@ -85,8 +74,7 @@
 				/*用户手动滑动时, 松手恢复原状的时间*/
 				var userDuration = 270;
 				/*用户移动多少距离才变换 slide*/
-				var threshold = 50;
-				var id;
+				var threshold = 65;
 
 				function toArray(arraylike) {
 				    return Array.prototype.slice.call(arraylike);
@@ -130,9 +118,9 @@
 				}
 				/*touchstart*/
 				function s(e) {
-				    var len = e.touches.length;
-				    var cur = len - 1;
-				    that.len = len;
+				    
+				    var cur = e.touches.length - 1;
+				    
 				    that.activeID = toArray(e.changedTouches)[0].identifier;
 				    clearTimeout(timer);
 				    /*为了防止用户滑动松开触发 transitionend */
@@ -144,12 +132,11 @@
 				}
 				/*touchmove*/
 				function m(e) {
-				    var len = e.touches.length;
-				    var cur = len - 1;
-				    that.len = len;
+
+				    var cur = e.touches.length - 1;
+
 				    if (that.activeID) {
 				        pos.moveX = toArray(e.touches)[cur].pageX;
-				        that.info = pos.moveX;
 				        translateX(Math.round(pos.initX - (pos.clickX - pos.moveX)));
 				    }
 				}
@@ -157,8 +144,8 @@
 				function e(e) {
 				    var distance;
 				    transitionDuration(0);
-				    var len = e.touches.length;
-				    var cur = len - 1;
+				    
+				    var cur = e.touches.length - 1;
 				    var curId = toArray(e.changedTouches)[0].identifier;
 				    if (curId == that.activeID) {
 				        that.activeID = undefined;
