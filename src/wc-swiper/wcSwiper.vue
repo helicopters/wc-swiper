@@ -12,24 +12,10 @@
   /*防止滑动闪烁的*/
   transform: translate3d(0px, 0, 0);
 }
-.info {
-	position: absolute;
-	top:0;
-	background:red;
-	height: 100px;
-	width: 100px;
-	z-index: 1000;
-}
+
 </style>
 <template>
     <div class="wc-swiper-container">
-		
-		<div class="info">
-			{{touches}}
-			<br/>
-			{{info}}
-		</div>
-
         <div class="wc-swiper-box">
 			<slot/>
         </div>
@@ -38,14 +24,14 @@
 </template>
 <script>
 
-// function toArray(arraylike) {
-//     return Array.prototype.slice.call(arraylike);
-// }
+
+
+
 
 
 
 	import wcPagination from './wcPagination'
-	// import T from './lib/touch'
+	
 	export default {
 		name: 'wcSwiper',
 		components: {
@@ -72,8 +58,8 @@
 				len: 0,
 				activeID: '',
 
-				touches: 0,
-				info: ''
+				
+				
 			}
 		},
 		mounted () {
@@ -90,7 +76,6 @@
 				/*为了 pagination 显示设置的变量*/
 				this.slides = slidesNumber;
 				var currentSlide = 0;
-				
 				var config = {
 				    interval: this.interval,
 				    duration: this.duration
@@ -107,7 +92,6 @@
 				    return Array.prototype.slice.call(arraylike);
 				}
 
-
 				function translateX(v) {
 				    swiper.style.transform = 'translate3d(' + v + 'px, 0,0)';
 				}
@@ -119,7 +103,6 @@
 				function getLocation() {
 				    return -(swiperWidth * currentSlide);
 				}
-
 				/* 添加 head, tail slide */
 				function append() {
 				    var head = slides[0].cloneNode(slides[0], true);
@@ -129,126 +112,56 @@
 				}
 
 				function transitionendHandler() {
-					if (that.autoplay) {
-					    if (currentSlide == slidesNumber - 1) {
-					        currentSlide = 0;
-					        transitionDuration(0);
-					        currentSlide++;
-					        translateX(getLocation());
-					    }
-					    that.currentSlide = currentSlide - 1;
-					    timer = setTimeout(function() {
-					        clearTimeout(timer);
-					        transitionDuration(config.duration);
-					        currentSlide++;
-					        translateX(getLocation());
-					    }, config.interval);						
-					}
+				    if (that.autoplay) {
+				        if (currentSlide == slidesNumber - 1) {
+				            currentSlide = 0;
+				            transitionDuration(0);
+				            currentSlide++;
+				            translateX(getLocation());
+				        }
+				        that.currentSlide = currentSlide - 1;
+				        timer = setTimeout(function() {
+				            clearTimeout(timer);
+				            transitionDuration(config.duration);
+				            currentSlide++;
+				            translateX(getLocation());
+				        }, config.interval);
+				    }
 				}
-
 				/*touchstart*/
 				function s(e) {
-
-
-					// that.touches = e.changedTouches.length;
-					console.log(e)
-
-					var len = e.touches.length;
-					var cur = len - 1;
-					that.len = len;
-
-					// that.touches = 'cur' + cur;
-
-
-
-				    // var curId = T.id(T.changedTouches(e)[cur]);
+				    var len = e.touches.length;
+				    var cur = len - 1;
+				    that.len = len;
 				    that.activeID = toArray(e.changedTouches)[0].identifier;
-
-				    that.touches = '现在的' + that.activeID;
-				    // that.info = id + '|' + curId; 
-
-				    // if (id) {
-				    //     if (curId !== id) {
-				    //         return;
-				    //     }
-				    // } else {
-				    //     id = curId;
-				    // }
-
-
 				    clearTimeout(timer);
 				    /*为了防止用户滑动松开触发 transitionend */
 				    swiper.removeEventListener('transitionend', transitionendHandler, false);
 				    transitionDuration(0);
 				    pos.initX = swiper.getBoundingClientRect().left;
-				    // pos.clickX = T.x(T.touches(e, 0));
 				    pos.clickX = toArray(e.touches)[cur].pageX;
 				    translateX(pos.initX);
 				}
-
 				/*touchmove*/
 				function m(e) {
-				    // var curId = T.id(T.touches(e)[0]);
-
-
-					var len = e.touches.length;
-					var cur = len - 1;
-
-					that.len = len;
-
-					// that.touches = 'curcur' + cur;
-				    // var curId = T.id(T.touches(e)[cur]);
-				    // var curId = toArray(e.touches)[cur].identifier;
-
-
-
-
+				    var len = e.touches.length;
+				    var cur = len - 1;
+				    that.len = len;
 				    if (that.activeID) {
-				        // pos.moveX = T.x(T.touches(e, 0))
 				        pos.moveX = toArray(e.touches)[cur].pageX;
-
 				        that.info = pos.moveX;
 				        translateX(Math.round(pos.initX - (pos.clickX - pos.moveX)));
 				    }
 				}
-
 				/*touchend*/
 				function e(e) {
 				    var distance;
-				    // var curId = T.id(T.changedTouches(e, 0));
-
 				    transitionDuration(0);
-
-				    // 当前松开的
-				   	
-
-					var len = e.touches.length;
-					var cur = len - 1;
-
-					var curId = toArray(e.changedTouches)[0].identifier;
-
-
-					// alert(that.len)
-					// if (that)
-					// that.touches = curId + 'uuu' + that.activeID;
-					that.info = '送开的' + curId;
-
-					if (curId == that.activeID) {
-					// alert(1)
-					that.activeID = undefined;
-
-					that.touches = '相同的' + curId + 'xxx' + that.activeID
-					// console.log(e.changedTouches)
-				    // var curId = T.id(T.changedTouches(e)[0]);
-
-				    
-
-				    // that.info = curId + 'xxx' +  that.activeID;
-				    // alert(id + 'xxx' + curId)
-
-				    // if (id == curId) {
-				        // id = undefined;
-				        // pos.endX = T.x(T.changedTouches(e, 0));
+				    var len = e.touches.length;
+				    var cur = len - 1;
+				    var curId = toArray(e.changedTouches)[0].identifier;
+				    if (curId == that.activeID) {
+				        that.activeID = undefined;
 				        pos.endX = toArray(e.changedTouches)[0].pageX;
 				        distance = pos.clickX - pos.endX;
 				        transitionDuration(userDuration);
@@ -256,11 +169,11 @@
 				        if (distance == 0) {
 				            translateX(getLocation());
 				        } else {
-				        	/*如果用户移动距离小于变更距离*/
+				            /*如果用户移动距离小于变更距离*/
 				            if (Math.abs(distance) < threshold) {
 				                translateX(getLocation());
 				            } else {
-				            	/*先判断方向*/
+				                /*先判断方向*/
 				                if (distance > 0) {
 				                    currentSlide++;
 				                } else {
@@ -271,20 +184,17 @@
 				        }
 				        that.currentSlide = currentSlide - 1;
 				        /*重新启动定时器*/
-
 				        if (that.autoplay) {
-					        timer = setTimeout(function() {
-					            swiper.addEventListener('transitionend', transitionendHandler, false);
-					            clearTimeout(timer);
-					            transitionDuration(config.duration);
-					            currentSlide++;
-					            translateX(getLocation());
-					        }, config.interval);				        	
+				            timer = setTimeout(function() {
+				                swiper.addEventListener('transitionend', transitionendHandler, false);
+				                clearTimeout(timer);
+				                transitionDuration(config.duration);
+				                currentSlide++;
+				                translateX(getLocation());
+				            }, config.interval);
 				        }
-
 				    }
 				}
-
 				/*用户滑动到边界的时候的判断*/
 				function boundary() {
 				    var start = swiper.getBoundingClientRect().left;
@@ -296,11 +206,9 @@
 				            translateX(getLocation());
 				        }, 10);
 				    }
-
 				    if (currentSlide == 0) {
-				    	/*如果滑动到第一个*/
+				        /*如果滑动到第一个*/
 				        distance = swiperWidth * (slidesNumber - 1) - (swiperWidth + start);
-				        
 				        var n = Math.floor(Math.abs(start) / swiperWidth);
 				        if (n === currentSlide) {
 				            currentSlide = slidesNumber - 2;
@@ -309,13 +217,11 @@
 				            delay();
 				        } else {
 				            currentSlide = n;
-				            
 				            translateX(getLocation())
 				        }
 				    } else if (currentSlide == slidesNumber - 1) {
-				    	/*如果是最后一个*/
+				        /*如果是最后一个*/
 				        distance = start + (swiperWidth * (slidesNumber - 2))
-				        
 				        var n = Math.ceil(Math.abs(start) / swiperWidth);
 				        if (n === currentSlide) {
 				            currentSlide = 1;
@@ -324,7 +230,6 @@
 				            delay();
 				        } else {
 				            currentSlide = n;
-				            
 				            translateX(getLocation())
 				        }
 				    } else {
@@ -346,14 +251,13 @@
 				currentSlide = 1;
 				this.currentSlide = currentSlide - 1;
 				translateX(getLocation());
-
 				if (this.autoplay) {
-					timer = setTimeout(function() {
-					    currentSlide++;
-					    clearTimeout(timer);
-					    transitionDuration(config.duration);
-					    translateX(getLocation());
-					}, config.interval);					
+				    timer = setTimeout(function() {
+				        currentSlide++;
+				        clearTimeout(timer);
+				        transitionDuration(config.duration);
+				        translateX(getLocation());
+				    }, config.interval);
 				}
 			} /*end init*/
 		} /*end methods*/
