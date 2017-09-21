@@ -101,13 +101,19 @@
 
 				function transitionendHandler() {
 				    if (that.autoplay) {
+
 				        if (currentSlide == slidesNumber - 1) {
 				            currentSlide = 0;
 				            transitionDuration(0);
 				            currentSlide++;
 				            translateX(getLocation());
 				        }
+
+				        // 这段只是为了向 pagination 暴露出 currentSlide, 和实际的跳转行为没有关系. 
 				        that.currentSlide = currentSlide - 1;
+				        // 这句呢, 是一个 hook 函数
+				        that.$emit('transitionend', that.currentSlide);
+
 				        timer = setTimeout(function() {
 				            clearTimeout(timer);
 				            transitionDuration(config.duration);
@@ -176,6 +182,8 @@
 				            }
 				        }
 				        that.currentSlide = currentSlide - 1;
+				        // hook
+				        that.$emit('transitionend', that.currentSlide);
 				        /*重新启动定时器*/
 				        if (that.autoplay) {
 				            timer = setTimeout(function() {

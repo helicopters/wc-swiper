@@ -45,7 +45,7 @@ Vue.use(wcSwiper);
 </wc-swiper>
 
 // 带配置选项
-<wc-swiper :duration="900" :interval="2000" :pagination="false">
+<wc-swiper :duration="900" :interval="2000" :pagination="false" @transitionend="fn">
 	<wc-slide>
 		// 这里放你需要轮播的内容, 比如一张图片
 	</wc-slide>
@@ -58,10 +58,11 @@ Vue.use(wcSwiper);
 在 wc-swiper 上面暴露了一些配置选项:
 
 ```shell
-duration:  	一次滑动的时间 | default: 500ms
-interval:  	两次滑动间隔时间 | default: 2500ms
-autoplay:  	是否自动播放 | default: true
-pagination: 是否显示 dots | default: true
+duration:	一次滑动的时间 | default: 500ms
+interval:	两次滑动间隔时间 | default: 2500ms
+autoplay:	是否自动播放 | default: true
+pagination:	是否显示 dots | default: true
+transitionend:	每次滑动结束之后会触发transitionend 钩子函数. 携带唯一一个参数, 为当前 slide 的位置.
 ```
 
 
@@ -125,7 +126,7 @@ pagination: 是否显示 dots | default: true
 
 想着可以设置默认 slide, 不再始终是 1
 
-想着可以在每次滑动之前和之后, 加上hook函数
+想着可以在每次滑动之前和之后, 加上hook函数  // done
 
 可以支持点击分页的时候, 可以跳转到指定的 slide.
 

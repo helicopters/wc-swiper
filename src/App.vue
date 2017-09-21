@@ -47,7 +47,7 @@
   <div id="app">
       <div class="header" v-if="list.length">
 
-        <wc-swiper :duration="300" :interval="2000" :pagination="true" :autoplay="true">
+        <wc-swiper :duration="300" :interval="2000" :pagination="true" :autoplay="true" @transitionend="fn">
           <wc-slide class="slide a">
               1
           </wc-slide>
@@ -83,6 +83,11 @@
     data () {
       return {
         list: [1]
+      }
+    },
+    methods: {
+      fn (v) {
+        console.log(v)
       }
     }
   }
