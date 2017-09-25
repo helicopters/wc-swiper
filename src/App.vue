@@ -47,7 +47,8 @@
   <div id="app">
       <div class="header" v-if="list.length">
 
-        <wc-swiper :duration="300" :interval="200" :pagination="true" :autoplay="false" @transitionend="fn" :curSlide=2>
+        <wc-swiper :duration="300" :interval="200" :pagination="true" :autoplay="false" @transitionend="fn">
+          
           <wc-slide class="slide a">
               1
           </wc-slide>
