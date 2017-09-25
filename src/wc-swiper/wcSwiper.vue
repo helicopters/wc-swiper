@@ -23,6 +23,12 @@
     </div>
 </template>
 <script>
+/*
+首先是自动轮播效果
+*/
+
+
+
 	import wcPagination from './wcPagination'
 	
 	export default {
@@ -42,6 +48,9 @@
 			},
 			autoplay: {
 				default: true
+			},
+			curSlide: {
+				default: 0
 			}
 		},
 		data () {
@@ -100,14 +109,25 @@
 				}
 
 				function transitionendHandler() {
-				    if (that.autoplay) {
 
-				        if (currentSlide == slidesNumber - 1) {
-				            currentSlide = 0;
-				            transitionDuration(0);
-				            currentSlide++;
-				            translateX(getLocation());
-				        }
+					console.log(currentSlide,'end', slidesNumber)
+
+
+
+				    // if (that.autoplay) {
+				    // 在这里检测, 如果当前已经滑动到最后一个 slide, 那么就要切换位置了. 
+			        if (currentSlide == slidesNumber - 1) {
+			            currentSlide = 0;
+			            transitionDuration(0);
+			            currentSlide++;
+			            translateX(getLocation());
+			        }
+
+
+
+
+
+
 
 				        // 这段只是为了向 pagination 暴露出 currentSlide, 和实际的跳转行为没有关系. 
 				        that.currentSlide = currentSlide - 1;
@@ -120,7 +140,7 @@
 				            currentSlide++;
 				            translateX(getLocation());
 				        }, config.interval);
-				    }
+				    // }
 				}
 				/*touchstart*/
 				function s(e) {
@@ -135,7 +155,7 @@
 
 				    clearTimeout(timer);
 				    /*为了防止用户滑动松开触发 transitionend */
-				    swiper.removeEventListener('transitionend', transitionendHandler, false);
+				    // swiper.removeEventListener('transitionend', transitionendHandler, false);
 				    transitionDuration(0);
 				    pos.initX = swiper.getBoundingClientRect().left;
 				    pos.clickX = toArray(e.touches)[cur].pageX;
@@ -187,7 +207,7 @@
 				        /*重新启动定时器*/
 				        if (that.autoplay) {
 				            timer = setTimeout(function() {
-				                swiper.addEventListener('transitionend', transitionendHandler, false);
+				                // swiper.addEventListener('transitionend', transitionendHandler, false);
 				                clearTimeout(timer);
 				                transitionDuration(config.duration);
 				                currentSlide++;
@@ -198,44 +218,45 @@
 				}
 				/*用户滑动到边界的时候的判断*/
 				function boundary() {
-				    var start = swiper.getBoundingClientRect().left;
-				    var distance = 0;
+				    // var start = swiper.getBoundingClientRect().left;
+				    // var distance = 0;
 
-				    function delay() {
-				        setTimeout(function() {
-				            transitionDuration(userDuration);
-				            translateX(getLocation());
-				        }, 10);
-				    }
-				    if (currentSlide == 0) {
-				        /*如果滑动到第一个*/
-				        distance = swiperWidth * (slidesNumber - 1) - (swiperWidth + start);
-				        var n = Math.floor(Math.abs(start) / swiperWidth);
-				        if (n === currentSlide) {
-				            currentSlide = slidesNumber - 2;
-				            transitionDuration(0);
-				            translateX(-distance);
-				            delay();
-				        } else {
-				            currentSlide = n;
-				            translateX(getLocation())
-				        }
-				    } else if (currentSlide == slidesNumber - 1) {
-				        /*如果是最后一个*/
-				        distance = start + (swiperWidth * (slidesNumber - 2))
-				        var n = Math.ceil(Math.abs(start) / swiperWidth);
-				        if (n === currentSlide) {
-				            currentSlide = 1;
-				            transitionDuration(0);
-				            translateX(distance);
-				            delay();
-				        } else {
-				            currentSlide = n;
-				            translateX(getLocation())
-				        }
-				    } else {
+				    // function delay() {
+				    //     setTimeout(function() {
+				    //         transitionDuration(userDuration);
+				    //         translateX(getLocation());
+				    //     }, 1);
+				    // }
+				    // if (currentSlide == 0) {
+				    //     /*如果滑动到第一个*/
+				    //     distance = swiperWidth * (slidesNumber - 1) - (swiperWidth + start);
+				    //     var n = Math.floor(Math.abs(start) / swiperWidth);
+				    //     if (n === currentSlide) {
+				    //         currentSlide = slidesNumber - 2;
+				    //         transitionDuration(0);
+				    //         translateX(-distance);
+				    //         delay();
+				    //     } else {
+				    //         currentSlide = n;
+				    //         translateX(getLocation())
+				    //     }
+				    // } else if (currentSlide == slidesNumber - 1) {
+				    //     /*如果是最后一个*/
+				    //     distance = start + (swiperWidth * (slidesNumber - 2))
+				    //     var n = Math.ceil(Math.abs(start) / swiperWidth);
+				    //     if (n === currentSlide) {
+				    //         currentSlide = 1;
+				    //         transitionDuration(0);
+				    //         translateX(distance);
+				    //         delay();
+				    //     } else {
+				    //         currentSlide = n;
+				    //         translateX(getLocation())
+				    //     }
+				    // } else {
+				    	// console.log(currentSlide);
 				        translateX(getLocation());
-				    }
+				    // }
 				}
 				swiper.addEventListener('transitionend', transitionendHandler, false);
 				swiper.addEventListener('touchstart', s, false);
@@ -245,21 +266,24 @@
 				swiperContainer.addEventListener('touchmove', function(e) {
 				    e.preventDefault();
 				}, false);
+
+
+				
 				append();
 				/* 因为重新追加了 slide, 所以要重置 slides 和 slidesNumber. */
 				slides = toArray(swiper.children);
 				slidesNumber = slides.length;
-				currentSlide = 1;
+				currentSlide = this.curSlide + 1;
 				this.currentSlide = currentSlide - 1;
 				translateX(getLocation());
-				if (this.autoplay) {
+				// if (this.autoplay) {
 				    timer = setTimeout(function() {
 				        currentSlide++;
 				        clearTimeout(timer);
 				        transitionDuration(config.duration);
 				        translateX(getLocation());
 				    }, config.interval);
-				}
+				// }
 			} /*end init*/
 		} /*end methods*/
 	} /*end export*/

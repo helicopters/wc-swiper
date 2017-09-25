@@ -47,7 +47,7 @@
   <div id="app">
       <div class="header" v-if="list.length">
 
-        <wc-swiper :duration="300" :interval="2000" :pagination="true" :autoplay="true" @transitionend="fn">
+        <wc-swiper :duration="300" :interval="200" :pagination="true" :autoplay="false" @transitionend="fn" :curSlide=2>
           <wc-slide class="slide a">
               1
           </wc-slide>
@@ -87,8 +87,23 @@
     },
     methods: {
       fn (v) {
-        console.log(v)
+        // console.log(v)
       }
     }
   }
+
+/*
+
+预期结果: 当前是最后一个, 下一个, 会滚动到我们添加的那个元素上面, 滚动结束之后, 会瞬间切换位置.
+
+实际的结果: 滚动到下一个元素, 结束之后, 没有瞬间切换位置, 而是有 duration 的切换.
+
+和我们设置的值有关系, 
+
+3 1 2 3 1
+
+  s     end
+      3->1, 切换结束之后, 再变化位置, 这样就不存在位置的变化问题了.
+*/
+
 </script>
