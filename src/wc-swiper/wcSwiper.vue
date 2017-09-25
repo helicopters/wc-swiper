@@ -15,8 +15,8 @@
 
 </style>
 <template>
-    <div class="wc-swiper-container">
-        <div class="wc-swiper-box" @transitionend="transitionend">
+    <div class="wc-swiper-container" @touchmove.prevent="fn">
+        <div class="wc-swiper-box" @transitionend="transitionend" @touchstart="s" @touchmove="m" @touchend="e">
 			<slot/>
         </div>
         <!-- <wc-pagination :slides="slides" :cur="currentSlide" v-if="pagination"/> -->
@@ -37,7 +37,7 @@
 				slides: null,
 				slidesNumber: 0,
 				reallySlidesNumber: 0,
-				/*取值范围:[0, reallySlidesNumber - 1]*/
+				/*取值范围:[0, slidesNumber - 1]*/
 				currentSlide: 0,
 				/*和播放相关的一些属性*/	
 				timer: null,
@@ -62,6 +62,19 @@
 			/*
 				除去第一次, 是我们主动轮播, 其他都是 transitionend 触发, 在 swiper 上面绑定 
 				transitionend
+			*/
+
+			/*====================用户手动播放======================*/
+
+			/*首先要禁止掉上下的滑动*/
+			// this.preventSwiper();
+
+			/*
+				用户手动滑动, 和自动滑动, 二者之间存在很多矛盾的点. 需要一个一个解决. 
+				在自动播放的情况下
+					用户任意时刻点击
+						日报:  未播放的时候, 不响应点击
+							  播放中, 响应点击, 停止播放, 保持当时的状态.
 			*/
 		},
 		methods: {
@@ -130,8 +143,9 @@
 				*/
 
 				if (this.currentSlide === this.slidesNumber - 1) {
-					this.transitionDuration(0);
 					this.currentSlide = 1;
+					this.transitionDuration(0);
+					
 					this.translateX(-this.swiperWidth*this.currentSlide);
 					
 				}
@@ -148,6 +162,18 @@
 
 
 			},
+			/*touchstart handler*/
+			s () {},
+			m () {},
+			e () {},
+			fn () {},
+
+			// preventSwiper () {
+			// 	this.swiperContainer.addEventListener('touchmove', function(e) {
+			// 	    e.preventDefault();
+			// 	}, false);
+			// },
+
 			translateX (value) {
 				this.swiper.style.transform = 'translate3d(' + value + 'px, 0, 0)';
 			},
