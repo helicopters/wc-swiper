@@ -29,6 +29,17 @@
 /*
 	如果 therehold 设置的比较短, duration 又比较长, 会有一个问题:
 	每一次 touchstart, 都会导致 currentSlide 加1, 加到最后, 就挂掉了. 
+	可能就是说, 实际的位移一点点, 但是 currentSlide 却会很多. 这不是我希望的. 
+	所以我可以这样操作
+	在自动滑动的时候, 不响应用户的行为, 这样不好, 
+	或者设置每一次滑动的间隔, 也就是说比如  50ms 响应一次, 这样也不是解决了根本的问题. 
+
+	按照我们的代码逻辑, 现在这样的方式是正确的. 什么叫做正确的呢???
+	或者这样啊, 我们手动滑动, 就手动滑动, 如果是快速滑动的话, 不改变?
+
+	什么是快速滑动, 两次滑动的间隔在 30ms 之内, 或者 50ms 之内, 都算是快速滑动
+	如果是快速滑动, 就不再更新 slide 的值, 而是在滑动结束之后, 根据位移, 记录一下最终滑动的值
+	最多滚动一个屏幕? 也不一定是滚动一个屏幕, 可能是根据值, 即可. 
 	
 */
 	export default {
@@ -57,7 +68,8 @@
 					direction: ''
 				},
 				therehold: 10,
-				lock: false
+				lock: false,
+				// quickTouchList: []
 				
 			}
 		},
@@ -231,6 +243,23 @@
 				想着能不能把 touchmove 给取消掉, 在解锁之后再绑定起来. 
 			*/
 
+			/*
+				touchstart 的时候, 记录一个 startTime
+				touchend 的时候, 不需要, 
+				每一次, 都往一个 list, 里面push 一个新的 startTime, 如果
+
+				但是一次 touch 之后, 还需要判断, 下次的 touch 的问题, 这个不用管, 
+
+				如果两次滑动之间, 小于 duration 是 300ms, 我们就不要让它响应了. 
+				这个要求我们的滑动之后的间隔比较短是不是. 
+
+			*/
+
+
+
+
+
+
 			/*touchstart handler*/
 			s (e) {
 				// console.log(this.currentSlide)
@@ -251,6 +280,8 @@
 					// }
 
 					if (!this.lock) {
+
+						// this.quickTouchList.push(+new Date());
 						
 					this.touching = true;
 
@@ -313,6 +344,19 @@
 					条件也没有什么用. 
 				*/
 				if (!this.lock) {
+
+					/*先计算出来两次 touch 的时间间隔*/
+// let interval = 401;
+					// if (this.quickTouchList.length > 1) {
+						
+					// 	let len = this.quickTouchList.length;
+					// 	interval = this.quickTouchList[len-1] - this.quickTouchList[len-2];
+					// 	console.log(interval,'两次滑动的间隔')
+					// }
+
+
+
+
 				// this.pos.distance = this.
 				this.pos.endX = Math.abs(e.changedTouches[0].clientX);
 				this.pos.distance = this.pos.startX - this.pos.endX;
@@ -327,7 +371,7 @@
 
 				*/
 
-				console.log(Math.abs(this.pos.distance))
+				// console.log(Math.abs(this.pos.distance))
 
 
 
@@ -370,7 +414,7 @@
 						
 					}
 
-					this.transitionDuration(this.duration);
+					this.transitionDuration(260);
 					this.replay();
 
 				} else {
@@ -381,7 +425,7 @@
 						这里没有动, 是因为在 s 的时候, 已经将 timer 给清除掉了.
 
 					*/
-					this.transitionDuration(this.duration);
+					this.transitionDuration(260);
 					this.replay();
 
 				}
