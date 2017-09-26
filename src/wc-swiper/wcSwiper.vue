@@ -26,7 +26,11 @@
 	function toArray(arraylike) {
 	    return Array.prototype.slice.call(arraylike);
 	}
-
+/*
+	如果 therehold 设置的比较短, duration 又比较长, 会有一个问题:
+	每一次 touchstart, 都会导致 currentSlide 加1, 加到最后, 就挂掉了. 
+	
+*/
 	export default {
 		name: 'wcSwiper',
 		data () {
@@ -52,7 +56,7 @@
 					distance: 0,
 					direction: ''
 				},
-				therehold: 100,
+				therehold: 10,
 				lock: false
 				
 			}
@@ -278,7 +282,7 @@
 
 					if (!this.lock && this.touching) {
 						// return;
-					
+						// clearTimeout(this.timer);
 
 				// if (this.slideStatus == 'pause') {
 					/*
@@ -350,6 +354,7 @@
 							// this.removeTouch();
 							// this
 							console.log('最后一个一个')
+							// alert('lcok')
 						}
 						/*
 							边界检查
@@ -371,6 +376,11 @@
 				} else {
 					/*不响应滑动*/
 					/*durtaion 应该需要动态设置一下*/
+					// alert(1)
+					/*
+						这里没有动, 是因为在 s 的时候, 已经将 timer 给清除掉了.
+
+					*/
 					this.transitionDuration(this.duration);
 					this.replay();
 
