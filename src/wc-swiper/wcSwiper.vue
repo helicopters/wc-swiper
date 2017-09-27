@@ -40,6 +40,19 @@
 	什么是快速滑动, 两次滑动的间隔在 30ms 之内, 或者 50ms 之内, 都算是快速滑动
 	如果是快速滑动, 就不再更新 slide 的值, 而是在滑动结束之后, 根据位移, 记录一下最终滑动的值
 	最多滚动一个屏幕? 也不一定是滚动一个屏幕, 可能是根据值, 即可. 
+
+
+	现在的逻辑是, 只要 touch 一次, 移动距离 > threhold, currentSlide + 1
+	这样的情况存在一个问题: 如果连续多次 touch, 并且每次移动距离都大于 therehold, 
+	但是每次 touch 的起点之间的距离, 这么说
+
+	对于 swiper, 你第一次touch 的点是 a, 第二次touch的点是 b, a,b 之间的距离很小, 
+	但是从a,b 都 touch 了 大于 threhold, 的距离, 然后呢, 此时就会造成, 虽然 swiper 的移动
+	距离很短, 但是 currentSlide 已经到了一个很大的值了. 
+
+	控制方式是, 一次 touch 结束, swiper 必须移动到指定位置, 才能继续进行下一次移动. 
+
+	touchend 的时候, 给一个 moving.
 	
 */
 	export default {
@@ -58,7 +71,9 @@
 				timer: null,
 				interval: 1000,
 				duration: 1000,
-				slideStatus: 'pause',
+				/*用户滑动的时候, 松开, 会有一个 duration*/
+				userDuration: 260,
+				// slideStatus: 'pause',
 				pos: {
 					startX: 0,
 					moveX: 0,
@@ -67,8 +82,9 @@
 					distance: 0,
 					direction: ''
 				},
-				therehold: 10,
-				lock: false,
+				therehold: 110,
+				moving: false
+				// lock: false,
 				// quickTouchList: []
 				
 			}
@@ -158,10 +174,11 @@
 					导致位置被修改. 
 					我们该怎么操作, 以控制这样的情况发生. 
 				*/
-				this.lock = false;
+				// this.lock = false;
 				// this.moveing = true;
 				
-				console.log('transitionend', this.currentSlide)
+				// console.log('transitionend', this.currentSlide)
+				// this.moving = false;
 				/*
 					此时就存在了一个判断的问题, 当滚动到最后一个 slide 的时候. 
 					不能继续往下滑动了, 要不然就超过了. 
@@ -173,7 +190,7 @@
 				// this.slideStatus = 'pause';
 
 				if (this.currentSlide === this.slidesNumber - 1) {
-					console.log('yes i adfads ')
+					// console.log('yes i adfads ')
 					this.currentSlide = 1;
 					this.transitionDuration(0);
 					
@@ -255,13 +272,16 @@
 
 			*/
 
-
+			/*
+				然后设置两次 touch 触发的时间点, 
+			*/
 
 
 
 
 			/*touchstart handler*/
 			s (e) {
+				// this.moveing = true;
 				// console.log(this.currentSlide)
 				// if (this.currentSlide === this.slidesNumber - 1) {
 				// 	console.log('老子最后一个')
@@ -279,17 +299,17 @@
 					// 	return false;
 					// }
 
-					if (!this.lock) {
+					// if (!this.lock) {
 
 						// this.quickTouchList.push(+new Date());
 						
-					this.touching = true;
+					// this.touching = true;
 
 					clearTimeout(this.timer);
 
 					this.pause();
 
-					console.log(this.slideStatus)
+					// console.log(this.slideStatus)
 					/*
 						记录当前的位置信息
 
@@ -300,7 +320,7 @@
 
 					// console.log(this.pos.startX)
 
-					}
+					// }
 
 					// clearTimeout(this.timer);
 
@@ -311,7 +331,7 @@
 					// 	return false;
 					// }
 
-					if (!this.lock && this.touching) {
+					// if (!this.lock && this.touching) {
 						// return;
 						// clearTimeout(this.timer);
 
@@ -324,6 +344,8 @@
 
 						将位移, 加到当前的位置上面.
 					*/
+
+					// if (!this.moving && !this.lock) {
 					this.pos.moveX = Math.abs(e.targetTouches[0].clientX);
 
 					this.pos.distance = this.pos.startX - this.pos.moveX;
@@ -332,18 +354,18 @@
 					this.translateX(this.pos.local - this.pos.distance);
 					// console.log(distance);
 					// if (distance)
-					}
+					// }
 
 					// console.log(this.pos.moveX);
 				// }				
 			},
 			e (e) {
-				this.touching = false;
+				// this.touching = false;
 				/*
 					因为 touchstart 必定会将 status 设置为 pause, 所以这里的判断
 					条件也没有什么用. 
 				*/
-				if (!this.lock) {
+				// if (!this.lock) {
 
 					/*先计算出来两次 touch 的时间间隔*/
 // let interval = 401;
@@ -355,7 +377,7 @@
 					// }
 
 
-
+					// if (!this.moving && !this.lock) {
 
 				// this.pos.distance = this.
 				this.pos.endX = Math.abs(e.changedTouches[0].clientX);
@@ -383,21 +405,21 @@
 						console.log(this.currentSlide)
 
 						if (this.currentSlide == 0) {
-							this.lock = true;
+							// this.lock = true;
 							// this
 
 							// this.removeTouch();
-							console.log('我是第一个了')
+							// console.log('我是第一个了')
 						}
 
 
 					} else {
 						this.currentSlide++;
 						if (this.currentSlide == this.slidesNumber - 1) {
-							this.lock = true;
+							// this.lock = true;
 							// this.removeTouch();
 							// this
-							console.log('最后一个一个')
+							// console.log('最后一个一个')
 							// alert('lcok')
 						}
 						/*
@@ -414,7 +436,7 @@
 						
 					}
 
-					this.transitionDuration(260);
+					this.transitionDuration(this.userDuration);
 					this.replay();
 
 				} else {
@@ -425,7 +447,7 @@
 						这里没有动, 是因为在 s 的时候, 已经将 timer 给清除掉了.
 
 					*/
-					this.transitionDuration(260);
+					this.transitionDuration(this.userDuration);
 					this.replay();
 
 				}
@@ -441,7 +463,7 @@
 
 				// if (this.slideStatus == 'moving') {
 					
-				}				
+				// }				
 			},
 			fn () {},
 
@@ -458,7 +480,7 @@
 				this.swiper.style.transitionDuration = ms + 'ms';
 			},
 			pause () {
-				this.slideStatus = 'pause';
+				// this.slideStatus = 'pause';
 
 				let x = this.swiper.getBoundingClientRect().left;
 				// console.log(x)
