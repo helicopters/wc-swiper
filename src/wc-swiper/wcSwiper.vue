@@ -183,6 +183,8 @@ touch 存在这么几种情况
 					direction: ''
 				},
 				therehold: 110,
+				moving: false,
+				lock: false
 
 
 				
@@ -278,7 +280,7 @@ touch 存在这么几种情况
 
 
 
-
+				this.moving = false;
 
 				// this.play();
 				
@@ -311,7 +313,9 @@ touch 存在这么几种情况
 				
 				
 				
+/*
 
+*/
 				
 				
 				
@@ -319,26 +323,37 @@ touch 存在这么几种情况
 
 			},
 			s (e) {
-				this.transitionDuration(0);
+				if (!this.moving) {
+					this.lock = true;
+					this.transitionDuration(0);
 
-				this.pos.startX = e.targetTouches[0].clientX;
-				/* 一次 touch 的 起始local 点, 是固定的 */
-				this.pos.local = this.left();
+					this.pos.startX = e.targetTouches[0].clientX;
+					/* 一次 touch 的 起始local 点, 是固定的 */
+					this.pos.local = this.left();
+				}
 			},
 			m (e) {
-				this.pos.moveX = e.targetTouches[0].clientX;
+				if (!this.moving && this.lock) {
 
-				this.pos.distance = this.pos.moveX - this.pos.startX;
+				
+					this.pos.moveX = e.targetTouches[0].clientX;
+
+					this.pos.distance = this.pos.moveX - this.pos.startX;
 
 
-				this.translateX(this.pos.local + this.pos.distance);
+					this.translateX(this.pos.local + this.pos.distance);
+				}
 			},
 			e (e) {
-				this.pos.endX = e.changedTouches[0].clientX;
+				if (!this.moving && this.lock) {
+					this.lock = false;
 
-				this.pos.distance = this.pos.endX - this.pos.startX;
+					this.pos.endX = e.changedTouches[0].clientX;
 
-				this.recover();
+					this.pos.distance = this.pos.endX - this.pos.startX;
+
+					this.recover();
+				}
 
 			},
 
@@ -389,7 +404,7 @@ touch 存在这么几种情况
 
 
 
-				this.transitionDuration(300);
+				this.transitionDuration(1000);
 
 
 
@@ -403,6 +418,22 @@ touch 存在这么几种情况
 						console.log('理论上移动结束的距离', this.left() + point[1]);
 
 						this.translateX(this.left() + point[1]);
+
+						/*
+							也就是在这里加一个判断
+						*/
+						let next = (this.left() + point[1]) / this.swiperWidth;
+						console.log(next,'岁月静好');
+
+						if (Math.abs(next) === 0) {
+							console.log('这次 touch 结束到第0 ge ')
+
+							this.moving = true;
+						}
+
+
+
+
 
 
 					} else {
@@ -425,6 +456,20 @@ touch 存在这么几种情况
 						console.log('理论上移动结束的距离', this.left() - point[0]);
 
 						this.translateX(this.left() - point[0]);
+
+						let next = (this.left() - point[0]) / this.swiperWidth;
+						console.log(next,'岁月静好');
+
+						if (Math.abs(next) === this.slidesNumber - 1) {
+							console.log('这次 touch 结束会到达最后一个')
+
+							this.moving = true;
+						}
+
+
+
+
+
 					} else {
 
 						console.log('移动的距离不太够')
