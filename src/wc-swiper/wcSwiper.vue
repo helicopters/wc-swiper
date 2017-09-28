@@ -200,7 +200,7 @@ touch 存在这么几种情况
 			this.setDefaultSlide();
 
 			/*设置默认slide之后, 就需要开始设置定时器, 自动轮播*/
-			this.play();
+			// this.play();
 
 			/*
 				除去第一次, 是我们主动轮播, 其他都是 transitionend 触发, 在 swiper 上面绑定 
@@ -270,17 +270,17 @@ touch 存在这么几种情况
 			transitionend () {
 
 
-				if (this.currentSlide === this.slidesNumber - 1) {
-					this.currentSlide = 1;
-					this.transitionDuration(0);
-					this.translateX(-this.swiperWidth* this.currentSlide);
-				}
+				// if (this.currentSlide === this.slidesNumber - 1) {
+				// 	this.currentSlide = 1;
+				// 	this.transitionDuration(0);
+				// 	this.translateX(-this.swiperWidth* this.currentSlide);
+				// }
 
 
 
 
 
-				this.play();
+				// this.play();
 				
 				
 
@@ -296,11 +296,113 @@ touch 存在这么几种情况
 
 
 			},
-			s (e) {},
-			m (e) {},
-			e (e) {},
+			s (e) {
+				this.transitionDuration(0);
+
+				this.pos.startX = e.targetTouches[0].clientX;
+				/* 一次 touch 的 起始local 点, 是固定的 */
+				this.pos.local = this.left();
+			},
+			m (e) {
+				this.pos.moveX = e.targetTouches[0].clientX;
+
+				this.pos.distance = this.pos.moveX - this.pos.startX;
+
+
+				this.translateX(this.pos.local + this.pos.distance);
+			},
+			e (e) {
+				this.pos.endX = e.changedTouches[0].clientX;
+
+				this.pos.distance = this.pos.endX - this.pos.startX;
+
+				this.recover();
+
+			},
 
 			fn () {},
+
+			recover () {
+
+				let left = Math.abs(this.left());
+
+				// console.log(left% this.swiperWidth);
+				// console.log(this.swiperWidth - 1)
+				let distance = left % this.swiperWidth;
+
+				let point = [];
+
+				/*
+					主要是为了拿到当前状态下面, swiper 距离正常状态的, 左右移动的距离分别是多少. 
+
+				*/
+				if (this.left() > 0) {
+					point = [distance, this.swiperWidth - distance];
+				} else {
+					point = [this.swiperWidth - distance, distance];
+				}
+
+				// let point = [this.swiperWidth - distance, distance];
+
+				// console.log(point);
+
+				let direction = ''
+				if (this.pos.distance > 0) {
+					direction = 'to-right';
+				} else {
+					direction = 'to-left';
+				}
+
+				if (direction === 'to-right') {
+					/*说明需要向右边移动*/
+					if (point[0] > this.therehold) {
+						// console.log('ria')
+
+						console.log('当前的距离', this.left())
+						console.log('需要向右移动的距离', point[1]);
+						console.log('理论上移动结束的距离', this.left() + point[1]);
+
+						this.translateX(this.left() + point[1]);
+
+
+					} else {
+						console.log('移动的距离不太够, 所以要恢复之前的状态');
+						console.log('当前的距离', this.left())
+						console.log('需要向左边移动的距离', point[0]);
+						console.log('理论上移动结束的距离', this.left() - point[0]);
+
+						this.translateX(this.left() - point[0]);
+
+					}
+				} 
+
+
+				if (direction === 'to-left') {
+					/*此时就说明需要往左边补全移动距离*/
+					if (point[1] > this.therehold) {
+						console.log('当前的距离', this.left())
+						console.log('需要向左边移动的距离', point[0]);
+						console.log('理论上移动结束的距离', this.left() - point[0]);
+
+						this.translateX(this.left() - point[0]);
+					} else {
+
+						console.log('移动的距离不太够')
+						console.log('当前的距离', this.left())
+						console.log('需要向左边移动的距离', point[0]);
+						console.log('理论上移动结束的距离', this.left() + point[1]);
+
+						this.translateX(this.left() + point[1]);
+
+					}
+				}
+
+
+
+
+				// console.log(direction)
+
+			},
 
 			
 			
@@ -321,6 +423,9 @@ touch 存在这么几种情况
 				
 				this.translateX(x);				
 			},
+			left () {
+				return this.swiper.getBoundingClientRect().left;
+			}
 			// replay () {
 				
 			// 	this.translateX(-this.swiperWidth * this.currentSlide);
