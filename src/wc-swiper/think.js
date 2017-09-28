@@ -39,6 +39,9 @@ transitionend 没有触发, 也就是没有正常替换, 会让 swiper 继续往
 因为防止 touchstart 没有触发. 因为只要在 moving 状态都不会触发 touchstart 事件.
 
 
+多指是一个比较复杂的东西, 我暂时不想考虑, 后置吧. 
+
+
 
 
 

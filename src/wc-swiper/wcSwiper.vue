@@ -283,7 +283,7 @@ touch 存在这么几种情况
 
 
 				this.moving = false;
-
+				// this.prevent = false;
 				// this.play();
 				
 
@@ -345,6 +345,7 @@ transtionend 始终不会触发. 但是
 				// 	// this.lock = true;
 				// }
 				// if ()
+				// console.log()
 
 
 				// that.activeID = toArray(e.changedTouches)[0].identifier;
@@ -360,6 +361,12 @@ transtionend 始终不会触发. 但是
 					this.pos.startX = e.touches[active].clientX;
 					/* 一次 touch 的 起始local 点, 是固定的 */
 					this.pos.local = this.left();
+
+
+
+
+
+
 				}
 			},
 			m (e) {
@@ -382,6 +389,28 @@ transtionend 始终不会触发. 但是
 因为我需要判断当前的 touchid 是不是和我按下的是一样的, 否则就会出现一根手指松开另一根手指失效的问题. 
 所以我还是必须要在 s 开始的时候, 去判断一下距离
 */
+
+
+
+					// // if ()
+					// // console.log(this.pos.local, this.pos.startX)
+					
+					// let max = this.swiperWidth * (this.slidesNumber - 1);
+					// console.log('最大的移动距离',max)
+					// let left = Math.abs(this.left());
+					// console.log(max - left,'接下来的距离');
+
+					// if (max - left < this.swiperWidth) {
+					// 	console.log('这个时候, 我就不应该响应 touch 事件了')
+					// 	this.prevent = true;
+					// } else {
+					// 	this.prevent = false;
+					// }
+
+
+
+
+
 
 
 				if (!this.moving && this.lock && (curId == this.activeId)) {
@@ -443,7 +472,7 @@ transtionend 始终不会触发. 但是
 
 
 
-				this.transitionDuration(1000);
+				this.transitionDuration(260);
 
 
 
