@@ -184,7 +184,9 @@ touch 存在这么几种情况
 				},
 				therehold: 110,
 				moving: false,
-				lock: false
+				lock: false,
+				activeId: '',
+				prevent: false
 
 
 				
@@ -314,6 +316,8 @@ touch 存在这么几种情况
 				
 				
 /*
+新的问题, 是两根手指一个up 一个 down, 就这样一直下去的话, 会导致一些问题. 
+transtionend 始终不会触发. 但是 
 
 */
 				
@@ -323,20 +327,46 @@ touch 存在这么几种情况
 
 			},
 			s (e) {
+
+				// let left = this.left();
+
+				// let xx = left/this.swiperWidth;
+
+				// console.log(Math.ceil(xx))
+
+				// console.log(this.slidesNumber - 1, Math.abs(Math.floor(xx)));
+
+				// if (Math.abs(Math.floor(xx)) >= this.slidesNumber - 1) {
+				// 	console.log('我日, 这是最后一个了')
+				// 	// this.lock = false;
+				// 	// this.moving = true;
+				// 	this.lock = false;
+				// } else {
+				// 	// this.lock = true;
+				// }
+				// if ()
+
+
+				// that.activeID = toArray(e.changedTouches)[0].identifier;
+
+				this.activeId = toArray(e.changedTouches)[0].identifier;
+
+				let active = e.touches.length - 1;
+
 				if (!this.moving) {
 					this.lock = true;
 					this.transitionDuration(0);
 
-					this.pos.startX = e.targetTouches[0].clientX;
+					this.pos.startX = e.touches[active].clientX;
 					/* 一次 touch 的 起始local 点, 是固定的 */
 					this.pos.local = this.left();
 				}
 			},
 			m (e) {
 				if (!this.moving && this.lock) {
-
+					let active = e.touches.length - 1;
 				
-					this.pos.moveX = e.targetTouches[0].clientX;
+					this.pos.moveX = e.touches[active].clientX;
 
 					this.pos.distance = this.pos.moveX - this.pos.startX;
 
@@ -345,9 +375,18 @@ touch 存在这么几种情况
 				}
 			},
 			e (e) {
-				if (!this.moving && this.lock) {
-					this.lock = false;
 
+				// var cur = e.touches.length - 1;
+				let curId = toArray(e.changedTouches)[0].identifier;
+/*
+因为我需要判断当前的 touchid 是不是和我按下的是一样的, 否则就会出现一根手指松开另一根手指失效的问题. 
+所以我还是必须要在 s 开始的时候, 去判断一下距离
+*/
+
+
+				if (!this.moving && this.lock && (curId == this.activeId)) {
+					this.lock = false;
+					// this.prevent = false;
 					this.pos.endX = e.changedTouches[0].clientX;
 
 					this.pos.distance = this.pos.endX - this.pos.startX;
