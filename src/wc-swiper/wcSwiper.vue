@@ -282,6 +282,28 @@ touch 存在这么几种情况
 
 				// this.play();
 				
+
+				let left = Math.abs(this.left());
+				// let swiperWidth = translateX
+
+				let y = left/this.swiperWidth;
+
+				console.log(y);
+
+				if (y === this.slidesNumber - 1) {
+					console.log('此时这个是最后一个 slide, 我要进行瞬间的替换, 替换到第1个 slide, slide 从 0 开始计数的');
+
+					this.transitionDuration(0);
+					this.translateX(-this.swiperWidth*1);
+
+
+				}
+
+				if (y === 0) {
+					console.log('这个世第一个 slide, 啊我要跳转到哪一个呢, 跳到倒数第二个')
+					this.transitionDuration(0);
+					this.translateX(-this.swiperWidth * (this.slidesNumber - 2))
+				}
 				
 
 				
@@ -322,6 +344,16 @@ touch 存在这么几种情况
 
 			fn () {},
 
+
+/*
+	同时要加上一个限制, 假设 swiper 从 -w 开始, 那么 -w 到 0, 以及 x, x+1 w 不响应
+	touch 事件, 这个可以通过 
+
+	不是, 是先加上一个替换, 也就是说, 在什么时候. 比如说当 transitonend 的时候, 并且此时拿到
+	哦, 当前的 slide 是最后一个. 
+*/
+
+
 			recover () {
 
 				let left = Math.abs(this.left());
@@ -342,6 +374,8 @@ touch 存在这么几种情况
 					point = [this.swiperWidth - distance, distance];
 				}
 
+
+
 				// let point = [this.swiperWidth - distance, distance];
 
 				// console.log(point);
@@ -352,6 +386,12 @@ touch 存在这么几种情况
 				} else {
 					direction = 'to-left';
 				}
+
+
+
+				this.transitionDuration(300);
+
+
 
 				if (direction === 'to-right') {
 					/*说明需要向右边移动*/
