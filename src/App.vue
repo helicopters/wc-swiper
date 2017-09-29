@@ -63,14 +63,14 @@
           <wc-slide class="slide c">
               3
           </wc-slide>
-<!-- 
+
           <wc-slide class="slide d">
               4
           </wc-slide>
 
           <wc-slide class="slide e">
               5
-          </wc-slide> -->
+          </wc-slide>
 
 
 
