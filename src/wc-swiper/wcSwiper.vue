@@ -13,7 +13,7 @@
 </style>
 <template>
     <div class="wc-swiper-container" @touchmove.prevent="fn">
-        <div class="wc-swiper-box" @transitionend="transitionend" @touchstart="s" @touchmove="m" @touchend="e">
+        <div class="wc-swiper-box" @transitionend="transitionend" @touchstart="s" @touchmove="m" @touchend="e" @mousedown="s" @mousemove="m" @mouseup="e">
 			<slot/>
         </div>
         <slot name="pagination"/>
@@ -69,6 +69,7 @@
 				moving: false,
 				unlock: false,
 				activeId: '',
+				mousedown: false
 			}
 		},
 		mounted () {
@@ -97,7 +98,7 @@
 
 					this.moving = true;
 					clearTimeout(this.timer);
-					
+
 					/*说明要往右边滑动*/
 					this.transitionDuration(Math.min(100* (index - cur), 500))
 					this.currentSlide = index;
@@ -178,35 +179,71 @@
 			},
 			/*toushstart handler*/
 			s (e) {
-				this.activeId = toArray(e.changedTouches)[0].identifier;
-				if (!this.moving) {
-					let active = e.touches.length - 1;
+
+				// console.log(e.type)
+				if (e.type === 'mousedown' && !this.moving) {
+					this.mousedown = true;
+					this.pos.startX = e.pageX;
+					console.log(e.pageX)
+					this.pos.local = this.left();
+
 					this.transitionDuration(0);
 					clearTimeout(this.timer);
-					this.unlock = true;
-					this.pos.startX = e.touches[active].clientX;
-					/* 一次 touch 的 起始local 点, 是固定的 */
-					this.pos.local = this.left();
+					
+				} else{
+					this.activeId = toArray(e.changedTouches)[0].identifier;
+					if (!this.moving) {
+						let active = e.touches.length - 1;
+						this.transitionDuration(0);
+						clearTimeout(this.timer);
+						this.unlock = true;
+						this.pos.startX = e.touches[active].clientX;
+						/* 一次 touch 的 起始local 点, 是固定的 */
+						this.pos.local = this.left();
+					}
 				}
+
+
 			},
 			/*toushmove handler*/
 			m (e) {
-				if (!this.moving && this.unlock) {
-					let active = e.touches.length - 1;
-					this.pos.moveX = e.touches[active].clientX;
+
+				if (e.type === 'mousemove' && this.mousedown && !this.moving) {
+					this.pos.moveX = e.pageX;
+					console.log(this.pos.startX,'我记录的起点')
 					this.pos.distance = this.pos.moveX - this.pos.startX;
+					console.log(this.pos.distance,'到目前为止移动的距离')
+					console.log('刚开始的点', this.pos.local)
+					console.log(this.pos.local + this.pos.distance,'应该移动到的距离')
 					this.translateX(this.pos.local + this.pos.distance);
+					// console.log(this.pos.distance)
+				} else {
+					if (!this.moving && this.unlock) {
+						let active = e.touches.length - 1;
+						this.pos.moveX = e.touches[active].clientX;
+						this.pos.distance = this.pos.moveX - this.pos.startX;
+						this.translateX(this.pos.local + this.pos.distance);
+					}					
 				}
+
 			},
 			/*toushend handler*/
 			e (e) {
-				let curId = toArray(e.changedTouches)[0].identifier;
-				if (!this.moving && this.unlock && (curId == this.activeId)) {
-					this.unlock = false;
-					this.pos.endX = e.changedTouches[0].clientX;
+				if (e.type === 'mouseup' && this.mousedown && !this.moving) {
+					this.mousedown = false;
+					this.pos.endX = e.pageX;
 					this.pos.distance = this.pos.endX - this.pos.startX;
-					this.recover();
+					this.recover();					
+				} else {
+					let curId = toArray(e.changedTouches)[0].identifier;
+					if (!this.moving && this.unlock && (curId == this.activeId)) {
+						this.unlock = false;
+						this.pos.endX = e.changedTouches[0].clientX;
+						this.pos.distance = this.pos.endX - this.pos.startX;
+						this.recover();
+					}					
 				}
+
 			},
 			recover () {
 				this.transitionDuration(this.userDuration);
