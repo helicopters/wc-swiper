@@ -1,7 +1,8 @@
 <style lang="less">
 .wc-pagination {
 	position: absolute;
-	bottom: 10px;
+	// bottom: 10px;
+	top:10px;
 	height: 18px;
 	width: 100%;
 	background: transparent;
@@ -24,7 +25,9 @@
 </style>
 <template>
 	<div class="wc-pagination">
-		<div class="wc-dot" v-for="v in slides" :class="{'wc-dot-active': cur==v-1}"></div>	
+		<div class="wc-dot" v-for="v in slides" :class="{'wc-dot-active': cur==v-1}">
+			{{v,cur}}
+		</div>	
 	</div>
 </template>
 <script>

@@ -54,29 +54,46 @@ Vue.use(wcSwiper);
 
 ```
 
-## 配置选项
+## 配置
 在 wc-swiper 上面暴露了一些配置选项:
 
 ```shell
 duration:	一次滑动的时间 | default: 500ms
 interval:	两次滑动间隔时间 | default: 2500ms
 autoplay:	是否自动播放 | default: true
-pagination:	是否显示 dots | default: true
 therehold:	用户滑动多少距离之后自动翻页 | default: 110
 curSlide:   默认显示第几个 slide | default: 0
 
 ```
 
 ## 事件
-在 wc-swiper 上可以监听一些事件:
+* 在 wc-swiper 上可以监听一些事件:
 ```shell
 transitionend 事件
 每一次滑动结束(不论用户手动滑动, 还是自动滑动) 都会触发 transitionend 事件. 
 transtionend 携带唯一一个参数:currentSlide, 用来表明, 当前 slide 是第几个 slide.
 并且要注意: slide 从 0 开始计数.
 ```
+* 在 wc-slide 上面可以监听 click 事件. 
 
-在 wc-slide 上面可以监听 click 事件. 
+## 方法
+
+> 有些时候, 你可能想要实现这样一种操作: 点击一个按钮, 让 swiper 跳转到指定的 slide, 或者点击按钮, 让
+swiper 跳转到上一个或者下一个. 对此, 你可以这样操作:
+
+```javascript
+1. 在 <wc-swiper> 标签上添加 ref 属性, 例如: <wc-swiper ref="swiper"></wc-swiper>
+2. 通过 this.$refs.swiper 来引用预先提供的 3 个方法:
+
+slideTo (index) 跳转至指定索引 (index 从 0 开始)
+next () 跳转到下一个
+previous () 跳转到上一个
+
+例如:
+this.$refs.swiper.slideTo(3) // 跳转到索引为 3 的 slide
+
+```
+
 
 ## 问题描述
 
@@ -124,13 +141,16 @@ transtionend 携带唯一一个参数:currentSlide, 用来表明, 当前 slide �
 </wc-swiper>
 ```
 
-**4. 怎么修改 pagination 的样式**
-> 目前没有提供修改 pagination 样式的入口. 因为一般对于 pagination 的修改, 要改就改的非常多. 所以你可以尝试直接覆盖默认的样式. 覆盖下面几个样式即可. 
+**4. 怎么添加 pagination 或者左右箭头?**
+> 个人认为, pagination 以及 arrow-left, arrow-right, 都只是 swiper 的配套设施, 而不应该是组成的一部分. 所以没有提供默认的 pagination 和 arrow, 而是提供了 slot, 如果你希望
+为 swiper 添加 pagination 或者 arrow, 可以通过这样的方式添加: 
 
 ```html
-.wc-pagination
-	.wc-dot
-	.wc-dot.wc-dot-active
+<wc-swiper>
+	<div slot="pagination"></div>
+	<div slot="arrowLeft"></div>
+	<div slot="arrowRight"></div>
+</wc-swiper>
 ```
 
 

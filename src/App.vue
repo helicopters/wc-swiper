@@ -45,13 +45,32 @@
 .z {
   background: #456789;
 }
+.btn {
+  height: 40px;
+  /*width: 80px;*/
+  background: red;
+/*  position: absolute;
+  top:10px;
+*/}
 </style>
 <template>
   <div id="app">
-      <div class="header" v-if="list.length">
-        <div class="btn" @click="s4">跳转到第四个</div>
 
-        <wc-swiper :therehold="300" :duration="300" :interval="1000" :pagination="true" :autoplay="true" @transitionend="fn" :curSlide="curSlide">
+        <div class="test btn" slot="ri" @click="fff">
+          点击跳转到第四页
+        </div>
+        <div class="test btn" slot="ri" @click="next">
+          下一个
+        </div>
+        <div class="test btn" slot="ri" @click="previous">
+          上一个
+        </div>
+
+
+      <div class="header" v-if="list.length">
+
+
+        <wc-swiper :therehold="110" :duration="300" :interval="2000" :pagination="true" :autoplay="true" @transitionend="fn" :curSlide="curSlide" ref="profile">
          
 
 
@@ -81,8 +100,13 @@
           <wc-slide class="slide e">
               5
           </wc-slide>
+        
 
-
+        <!-- <wc-pagination slot="ri" :slides="6" :cur="curSlide"/> -->
+        
+        <p slot="pagination">fdsa</p>
+        <p slot="arrowLeft">fdsaf</p>
+        <p slot="arrowRight">xxx</p>
 
 
 
@@ -91,25 +115,52 @@
   </div>
 </template>
 <script>
-
+ // import wcPagination from './wc-swiper/wcPagination'
   export default {
     name: 'app',
+    components: {
+      // wcPagination
+    },
     data () {
       return {
         list: [1],
-        curSlide: 1000
+        curSlide: 0
       }
+    },
+    mounted () {
+      // setTimeout(()=>{
+      //   console.log(this.$refs.xxx)
+      //   console.log(this.$refs.profile,'fdsafdsa')
+      // },100)
+      
     },
     methods: {
       fn (v) {
-        console.log('transitionend',v)
+        // console.log('transitionend',v)
+        this.curSlide = v;
       },
       ri () {
         console.log('我点击了')
       },
       s4 () {
-        this.curSlide = 4;
-      }
+        this.curSlide = this.curSlide - 1;
+        setTimeout(()=>{
+          this.curSlide = 4;
+        },1)
+        
+      },
+      fff () {
+        // console.log('chuffa')
+        // this.$emit('swiperto')
+        this.$refs.profile.slideTo(4);
+      },
+      next () {
+        this.$refs.profile.next();
+      },
+      previous () {
+        this.$refs.profile.previous();
+      },
+      // transitionend
     }
   }
 

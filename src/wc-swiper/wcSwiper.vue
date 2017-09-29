@@ -2,7 +2,7 @@
 .wc-swiper-container {
   position: relative;
   width: 100%;
-  height: 100%;
+  // height: 100%;
   overflow: hidden;
   z-index: 1;
 }
@@ -18,7 +18,9 @@
         <div class="wc-swiper-box" @transitionend="transitionend" @touchstart="s" @touchmove="m" @touchend="e">
 			<slot/>
         </div>
-        <!-- <wc-pagination :slides="slides" :cur="currentSlide" v-if="pagination"/> -->
+        <slot name="pagination"/>
+        <slot name="arrowLeft"/>
+        <slot name="arrowRight"/>
     </div>
 </template>
 <script>
@@ -48,13 +50,6 @@
 				default: 0
 			}
 		},
-		// watch: {
-		// 	curSlide (destSlide, oldSlide) {
-		// 		console.log('新到',destSlide, oldSlide)
-		// 		// this.setDefaultSlide();
-		// 		this.translateX(-this.swiperWidth * (destSlide + 1));
-		// 	}
-		// },
 		data () {
 			return {
 				swiper: null,
@@ -65,8 +60,6 @@
 				/*currentSlide 的值也就真正在 play 函数里面使用到了*/
 				currentSlide: 0,	
 				timer: null,
-				// interval: 2000,
-				// duration: 300,
 				userDuration: 200,
 				pos: {
 					startX: 0,
@@ -75,7 +68,7 @@
 					local: 0,
 					distance: 0
 				},
-				// therehold: 110,
+				
 				moving: false,
 				unlock: false,
 				activeId: '',
@@ -88,16 +81,127 @@
 			this.cloneSlide();
 			/*克隆结束之后, 需要设置默认显示的slide*/
 			this.setDefaultSlide();
-			// this.translateX(-this.swiperWidth * (this.currentSlide + 1));
+			
 			/*设置默认slide之后, 就需要开始设置定时器, 自动轮播*/
 			if (this.autoplay) {
 				this.play();
 			}
 			
 		},
+		/*		
+		这种方式并不好, 用户不友好, 实现方式也不可以. 
+		关键用户点击, 我们唯一要做的, 就是让他改变 slide 的值. 但是 slide 的值, 只能改变一次. 
+		后续就不算了. 
+		*/
+		// watch: {
+		// 	currentSlide () {
+
+		// 	}
+		// 	// curSlide (nSlide) {
+		// 	// 	clearTimeout(this.timer);
+		// 	// 	this.transitionDuration(200*(Math.abs(this.curSlide - nSlide) + 1));
+		// 	// 	this.translateX(-this.swiperWidth * (nSlide + 1));
+		// 	// } 
+		// },
 		methods: {
 			/*阻止容器的上下滚动*/
 			fn () {},
+			// xxx () {
+			// 	console.log('收到同志了')
+			// },
+			/*由外界传递出来的行为*/
+
+			/*滑动到指定的页面*/
+			slideTo (index) {
+
+
+				if (!this.moving) {
+					this.moving = true;
+					clearTimeout(this.timer)
+				// console.log(index)
+				/*
+					算法
+					先拿到当前的 slide
+
+					src: index
+					target: this.currentSlide - 1;
+				*/
+				// let dest = index;
+				// console.log(this.currentSlide);
+				// let dest = this.cur
+				let cur = this.currentSlide - 1;
+				/*
+					如果给定的 index 大于 slides 的个数 - 2 是真正显示的个数, -1 是从0 开始算
+				*/
+				if (index > this.slidesNumber - 3) {
+					return;
+				} 
+				if (index < 0) {
+					return;
+				}
+
+				// let dest = this.
+				if (cur == index) {
+					return;
+				} else {
+					/*说明要往右边滑动*/
+					// console.log('要往右边滑动了')
+					console.log(index - cur);
+
+					this.transitionDuration(Math.min(100* (index - cur), 500))
+
+					this.currentSlide = index;
+					this.translateX(-this.swiperWidth * (this.currentSlide + 1));
+
+
+
+				}
+
+				// if (cur < index) {
+
+
+
+				// }
+
+				// if (cur > index) {
+				// 	console.log(index - cur);
+
+				// 	this.transitionDuration(Math.min(100* Math.abs(index - cur), 600))
+
+				// 	this.currentSlide = index;
+				// 	this.translateX(-this.swiperWidth * (this.currentSlide + 1));
+
+
+				}
+
+				// alert(1)
+			},
+
+			next () {
+
+				if (!this.moving) {
+					clearTimeout(this.timer)
+					this.moving = true;
+					// this.tra
+					// this.translateX(-this.swiperWidth * (this.currentSlide + 1));
+					this.transitionDuration(this.userDuration)
+					this.translateX(this.left() - this.swiperWidth);
+
+				}
+
+			},
+			previous () {
+
+				if (!this.moving) {
+					clearTimeout(this.timer)
+					this.moving = true;
+					// this.tra
+					this.transitionDuration(this.userDuration)
+					// this.translateX(-this.swiperWidth * (this.currentSlide + 1));
+					this.translateX(this.left() + this.swiperWidth);
+
+				}				
+			},
 			initElement () {
 				this.swiperContainer = document.querySelector('.wc-swiper-container');
 				this.swiper = document.querySelector('.wc-swiper-box');
@@ -123,16 +227,6 @@
 				} else {
 					this.currentSlide = this.curSlide;
 				}
-				// this.translateX(-this.swiperWidth);
-				// if (this.currentSlide < 0) {
-				// 	this.currentSlide = 0
-				// } else if (this.currentSlide > this.slidesNumber - 2) {
-				// 	this.currentSlide = 0;
-				// }
-				// console.log(this.currentSlide,'fdasf')
-				// /* +1 是为了屏蔽掉我们主动追加的两个 slide 的影响 */
-				// this.currentSlide = this.currentSlide + 1; 
-				// this.translateX(-this.swiperWidth*this.currentSlide);
 				this.translateX(-this.swiperWidth * (this.currentSlide + 1));
 			},
 			play () {
@@ -140,11 +234,11 @@
 					clearTimeout(this.timer);
 					this.moving = true;
 					this.unlock = false;
-					// this.currentSlide++;
+					
 					this.transitionDuration(this.duration);
-					// let left = - (this.swiperWidth + Math.abs(this.left()));
+					
 					this.translateX(- (this.swiperWidth + Math.abs(this.left())));
-					/*及时清除定时器*/
+
 				}, this.interval);
 			},
 			transitionend () {
