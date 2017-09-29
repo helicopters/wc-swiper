@@ -15,8 +15,8 @@
 
 </style>
 <template>
-    <div class="wc-swiper-container" @touchmove.prevent="fn">
-        <div class="wc-swiper-box" @transitionend="transitionend" @touchstart="s" @touchmove="m" @touchend="e">
+    <div class="wc-swiper-container">
+        <div class="wc-swiper-box" @transitionend="transitionend">
 			<slot/>
         </div>
         <!-- <wc-pagination :slides="slides" :cur="currentSlide" v-if="pagination"/> -->
@@ -186,7 +186,7 @@ touch 存在这么几种情况
 				moving: false,
 				lock: false,
 				activeId: '',
-				prevent: false
+				// prevent: false
 
 
 				
@@ -204,13 +204,15 @@ touch 存在这么几种情况
 			this.setDefaultSlide();
 
 			/*设置默认slide之后, 就需要开始设置定时器, 自动轮播*/
-			// this.play();
+			this.play();
 
 			/*
 				除去第一次, 是我们主动轮播, 其他都是 transitionend 触发, 在 swiper 上面绑定 
 				transitionend
 			*/
-
+				// swiperContainer.addEventListener('touchmove', function(e) {
+				//     e.preventDefault();
+				// }, false);
 
 		},
 		methods: {
@@ -260,15 +262,21 @@ touch 存在这么几种情况
 			play () {
 				
 				this.timer = setTimeout(()=>{
-
-					this.swiperStatus = 'moving';
+					clearTimeout(this.timer);
+					// this.swiperStatus = 'moving';
+					this.moving = true;
 
 					this.currentSlide++;
 					this.transitionDuration(this.duration);
-					this.translateX(-this.swiperWidth*this.currentSlide);
+
+					// setTimeout(()=>{
+						this.translateX(-this.swiperWidth*this.currentSlide);
+					// },1)
+					
+					
 
 					/*及时清除定时器*/
-					clearTimeout(this.timer);
+					
 				}, this.interval);
 			},
 			transitionend () {
@@ -293,6 +301,7 @@ touch 存在这么几种情况
 				let y = left/this.swiperWidth;
 
 				console.log(y);
+				this.currentSlide = y;
 
 				if (y === this.slidesNumber - 1) {
 					console.log('此时这个是最后一个 slide, 我要进行瞬间的替换, 替换到第1个 slide, slide 从 0 开始计数的');
@@ -300,16 +309,18 @@ touch 存在这么几种情况
 					this.transitionDuration(0);
 					this.translateX(-this.swiperWidth*1);
 
-
+					this.currentSlide = 1;
 				}
 
 				if (y === 0) {
 					console.log('这个世第一个 slide, 啊我要跳转到哪一个呢, 跳到倒数第二个')
 					this.transitionDuration(0);
 					this.translateX(-this.swiperWidth * (this.slidesNumber - 2))
+					this.currentSlide = this.slidesNumber - 1;
 				}
 				
 
+				this.play();
 				
 
 				
@@ -327,6 +338,9 @@ transtionend 始终不会触发. 但是
 
 			},
 			s (e) {
+
+
+				console.log('start 事件触发了')
 
 				// let left = this.left();
 
@@ -346,7 +360,7 @@ transtionend 始终不会触发. 但是
 				// }
 				// if ()
 				// console.log()
-
+				console.log(this.currentSlide,'fdsafafasdfdas')
 
 				// that.activeID = toArray(e.changedTouches)[0].identifier;
 
@@ -355,8 +369,15 @@ transtionend 始终不会触发. 但是
 				let active = e.touches.length - 1;
 
 				if (!this.moving) {
-					this.lock = true;
+
+
 					this.transitionDuration(0);
+					// clearTimeout(this.timer);
+					// this.play();
+
+
+					this.lock = true;
+					
 
 					this.pos.startX = e.touches[active].clientX;
 					/* 一次 touch 的 起始local 点, 是固定的 */
@@ -370,7 +391,11 @@ transtionend 始终不会触发. 但是
 				}
 			},
 			m (e) {
+
+				console.log('touchmove 事件触发了')
 				if (!this.moving && this.lock) {
+
+					
 					let active = e.touches.length - 1;
 				
 					this.pos.moveX = e.touches[active].clientX;
@@ -457,7 +482,7 @@ transtionend 始终不会触发. 但是
 					point = [this.swiperWidth - distance, distance];
 				}
 
-
+				// alert(1)
 
 				// let point = [this.swiperWidth - distance, distance];
 
@@ -466,13 +491,24 @@ transtionend 始终不会触发. 但是
 				let direction = ''
 				if (this.pos.distance > 0) {
 					direction = 'to-right';
-				} else {
+				} else{
 					direction = 'to-left';
-				}
+				} 
+
+				// else {
+				// 	// direction = 'none'
+				// 	// this.play();
+				// }
 
 
 
 				this.transitionDuration(260);
+
+
+
+				// if (direction == 'none') {
+				// 	this.play();
+				// }
 
 
 
@@ -492,6 +528,8 @@ transtionend 始终不会触发. 但是
 						*/
 						let next = (this.left() + point[1]) / this.swiperWidth;
 						console.log(next,'岁月静好');
+
+						// this.currentSlide = Math.abs(next);
 
 						if (Math.abs(next) === 0) {
 							console.log('这次 touch 结束到第0 ge ')
@@ -569,13 +607,13 @@ transtionend 始终不会触发. 但是
 			transitionDuration (ms) {
 				this.swiper.style.transitionDuration = ms + 'ms';
 			},
-			pause () {
+			// pause () {
 				
 
-				let x = this.swiper.getBoundingClientRect().left;
+			// 	let x = this.swiper.getBoundingClientRect().left;
 				
-				this.translateX(x);				
-			},
+			// 	this.translateX(x);				
+			// },
 			left () {
 				return this.swiper.getBoundingClientRect().left;
 			}
