@@ -1,5 +1,11 @@
 <style>
+* {
+  -webkit-backface-visibility: hidden;
+}
 
+body {
+  -webkit-transform: translate3d(0, 0, 0);
+}
     .slide {
       height: 50%;
       width: 100%;
