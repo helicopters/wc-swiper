@@ -1,8 +1,8 @@
 <style lang="less">
 .wc-pagination {
 	position: absolute;
-	// bottom: 10px;
-	top:10px;
+	bottom: 10px;
+	// top:10px;
 	height: 18px;
 	width: 100%;
 	background: transparent;
@@ -25,8 +25,8 @@
 </style>
 <template>
 	<div class="wc-pagination">
-		<div class="wc-dot" v-for="v in slides" :class="{'wc-dot-active': cur==v-1}">
-			{{v,cur}}
+		<div class="wc-dot" v-for="v in dots" :class="{'wc-dot-active': active== v-1}">
+
 		</div>	
 	</div>
 </template>
@@ -34,10 +34,10 @@
 	export default {
 		name: 'wcPagination',
 		props: {
-			slides: {
+			dots: {
 				default: 0
 			},
-			cur: {
+			active: {
 				default: 0
 			}
 		}

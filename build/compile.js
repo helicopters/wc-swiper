@@ -12,9 +12,9 @@ const name = require(packageJson).name;
 
 const target = path.resolve(process.cwd(), name);
 
-// 支持单个文件引入的方式
-const vueFiles = path.resolve(process.cwd(), 'src/wc-swiper/*.vue');
-const vueLib = path.resolve(process.cwd(), 'src/wc-swiper/lib');
+// // 支持单个文件引入的方式
+// const vueFiles = path.resolve(process.cwd(), 'src/wc-swiper/*.vue');
+// const vueLib = path.resolve(process.cwd(), 'src/wc-swiper/lib');
 
 
 
@@ -35,7 +35,7 @@ rm(path.resolve(process.cwd() , name), err => {
 
             cp('-R', src + '/*', target);
 
-            cp('-R', vueFiles, target);
+            // cp('-R', vueFiles, target);
             // cp('-R', vueLib, target);
 
             console.log();

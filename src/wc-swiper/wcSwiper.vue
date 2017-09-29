@@ -2,7 +2,6 @@
 .wc-swiper-container {
   position: relative;
   width: 100%;
-  // height: 100%;
   overflow: hidden;
   z-index: 1;
 }
@@ -10,7 +9,6 @@
   height: 100%;
   width: 100%;
   display: flex;
-  
 }
 </style>
 <template>
@@ -68,7 +66,6 @@
 					local: 0,
 					distance: 0
 				},
-				
 				moving: false,
 				unlock: false,
 				activeId: '',
@@ -81,125 +78,46 @@
 			this.cloneSlide();
 			/*克隆结束之后, 需要设置默认显示的slide*/
 			this.setDefaultSlide();
-			
 			/*设置默认slide之后, 就需要开始设置定时器, 自动轮播*/
 			if (this.autoplay) {
 				this.play();
 			}
-			
 		},
-		/*		
-		这种方式并不好, 用户不友好, 实现方式也不可以. 
-		关键用户点击, 我们唯一要做的, 就是让他改变 slide 的值. 但是 slide 的值, 只能改变一次. 
-		后续就不算了. 
-		*/
-		// watch: {
-		// 	currentSlide () {
-
-		// 	}
-		// 	// curSlide (nSlide) {
-		// 	// 	clearTimeout(this.timer);
-		// 	// 	this.transitionDuration(200*(Math.abs(this.curSlide - nSlide) + 1));
-		// 	// 	this.translateX(-this.swiperWidth * (nSlide + 1));
-		// 	// } 
-		// },
 		methods: {
 			/*阻止容器的上下滚动*/
 			fn () {},
-			// xxx () {
-			// 	console.log('收到同志了')
-			// },
-			/*由外界传递出来的行为*/
-
 			/*滑动到指定的页面*/
 			slideTo (index) {
-
-
 				if (!this.moving) {
+
+					let cur = this.currentSlide - 1;
+					if (index > this.slidesNumber - 3 || index < 0 || cur == index) {
+						return;
+					} 
+
 					this.moving = true;
-					clearTimeout(this.timer)
-				// console.log(index)
-				/*
-					算法
-					先拿到当前的 slide
-
-					src: index
-					target: this.currentSlide - 1;
-				*/
-				// let dest = index;
-				// console.log(this.currentSlide);
-				// let dest = this.cur
-				let cur = this.currentSlide - 1;
-				/*
-					如果给定的 index 大于 slides 的个数 - 2 是真正显示的个数, -1 是从0 开始算
-				*/
-				if (index > this.slidesNumber - 3) {
-					return;
-				} 
-				if (index < 0) {
-					return;
-				}
-
-				// let dest = this.
-				if (cur == index) {
-					return;
-				} else {
+					clearTimeout(this.timer);
+					
 					/*说明要往右边滑动*/
-					// console.log('要往右边滑动了')
-					console.log(index - cur);
-
 					this.transitionDuration(Math.min(100* (index - cur), 500))
-
 					this.currentSlide = index;
 					this.translateX(-this.swiperWidth * (this.currentSlide + 1));
-
-
-
 				}
-
-				// if (cur < index) {
-
-
-
-				// }
-
-				// if (cur > index) {
-				// 	console.log(index - cur);
-
-				// 	this.transitionDuration(Math.min(100* Math.abs(index - cur), 600))
-
-				// 	this.currentSlide = index;
-				// 	this.translateX(-this.swiperWidth * (this.currentSlide + 1));
-
-
-				}
-
-				// alert(1)
 			},
-
 			next () {
-
 				if (!this.moving) {
-					clearTimeout(this.timer)
+					clearTimeout(this.timer);
 					this.moving = true;
-					// this.tra
-					// this.translateX(-this.swiperWidth * (this.currentSlide + 1));
 					this.transitionDuration(this.userDuration)
 					this.translateX(this.left() - this.swiperWidth);
-
 				}
-
 			},
 			previous () {
-
 				if (!this.moving) {
-					clearTimeout(this.timer)
+					clearTimeout(this.timer);
 					this.moving = true;
-					// this.tra
 					this.transitionDuration(this.userDuration)
-					// this.translateX(-this.swiperWidth * (this.currentSlide + 1));
 					this.translateX(this.left() + this.swiperWidth);
-
 				}				
 			},
 			initElement () {
@@ -217,7 +135,6 @@
 				/*克隆节点之后, 需要 reset 一些属性*/
 				this.slides = toArray(this.swiper.children);
 				this.slidesNumber = this.slides.length;
-
 			},
 			setDefaultSlide () {
 				if (this.curSlide < 0) {
@@ -234,11 +151,8 @@
 					clearTimeout(this.timer);
 					this.moving = true;
 					this.unlock = false;
-					
 					this.transitionDuration(this.duration);
-					
 					this.translateX(- (this.swiperWidth + Math.abs(this.left())));
-
 				}, this.interval);
 			},
 			transitionend () {
@@ -258,7 +172,6 @@
 					this.currentSlide = this.slidesNumber - 2;
 				}
 				this.$emit('transitionend', this.currentSlide - 1);
-
 				if (this.autoplay) {
 					this.play();
 				}
@@ -297,7 +210,6 @@
 			},
 			recover () {
 				this.transitionDuration(this.userDuration);
-				
 				let distance = Math.abs(this.left()) % this.swiperWidth;
 				let point = [];
 				let direction = ''
@@ -309,7 +221,6 @@
 				} else {
 					point = [this.swiperWidth - distance, distance];
 				}
-				
 				if (this.pos.distance > 0) {
 					direction = 'to-right';
 				} else if (this.pos.distance < 0){
@@ -317,7 +228,6 @@
 				} else {
 					direction = 'none';
 				}
-
 				if (direction == 'none') {
 					if (this.autoplay) {
 						this.play();

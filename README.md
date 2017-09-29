@@ -45,7 +45,7 @@ Vue.use(wcSwiper);
 </wc-swiper>
 
 // 带配置选项
-<wc-swiper :duration="900" :interval="2000" :pagination="false" @transitionend="fn">
+<wc-swiper :duration="900" :interval="2000" @transitionend="fn">
 	<wc-slide>
 		// 这里放你需要轮播的内容, 比如一张图片
 	</wc-slide>
@@ -108,7 +108,7 @@ this.$refs.swiper.slideTo(3) // 跳转到索引为 3 的 slide
 	height: 200px;
 }
 ```
-默认的, wc-swiper 的高度为 100%; 所以你也可以为 wc-swiper 外层包裹一个父元素, 设置父元素的高度. 或者通过 style 设置 wc-swiper 的高度. 
+
 
 **2. 如何渲染异步数据**
 > 一般情况下, 轮播的数据可能通过接口请求得来, 此时, 需要在 wc-swiper 上面加上 v-if 判断, 从而延迟 wc-swiper 的渲染时机:
@@ -153,6 +153,7 @@ this.$refs.swiper.slideTo(3) // 跳转到索引为 3 的 slide
 </wc-swiper>
 ```
 
+可以参考这个的写法: ![Pagination](https://github.com/helicopters/wc-swiper/blob/master/src/Pagination.vue)
 
 ## 存在的问题
 * 多指触碰的时候, 比如多根手指同时滑动的时候, 就会出现问题, 这种极端情况, 比较复杂和少见, 暂时不考虑. 
