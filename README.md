@@ -157,3 +157,7 @@ this.$refs.swiper.slideTo(3) // 跳转到索引为 3 的 slide
 
 ## 存在的问题
 * 多指触碰的时候, 比如多根手指同时滑动的时候, 就会出现问题, 这种极端情况, 比较复杂和少见, 暂时不考虑. 
+
+
+## 项目地址
+![wc-swiper](https://github.com/helicopters/wc-swiper)

@@ -179,17 +179,15 @@
 			},
 			/*toushstart handler*/
 			s (e) {
-
-				// console.log(e.type)
 				if (e.type === 'mousedown' && !this.moving) {
 					this.mousedown = true;
 					this.pos.startX = e.pageX;
-					console.log(e.pageX)
+					
 					this.pos.local = this.left();
 
 					this.transitionDuration(0);
 					clearTimeout(this.timer);
-					
+
 				} else{
 					this.activeId = toArray(e.changedTouches)[0].identifier;
 					if (!this.moving) {
@@ -210,13 +208,8 @@
 
 				if (e.type === 'mousemove' && this.mousedown && !this.moving) {
 					this.pos.moveX = e.pageX;
-					console.log(this.pos.startX,'我记录的起点')
 					this.pos.distance = this.pos.moveX - this.pos.startX;
-					console.log(this.pos.distance,'到目前为止移动的距离')
-					console.log('刚开始的点', this.pos.local)
-					console.log(this.pos.local + this.pos.distance,'应该移动到的距离')
 					this.translateX(this.pos.local + this.pos.distance);
-					// console.log(this.pos.distance)
 				} else {
 					if (!this.moving && this.unlock) {
 						let active = e.touches.length - 1;
