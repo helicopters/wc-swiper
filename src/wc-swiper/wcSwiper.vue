@@ -10,8 +10,7 @@
   height: 100%;
   width: 100%;
   display: flex;
-  // transform: translate3d(0px, 0, 0);
-
+  
 }
 </style>
 <template>
@@ -28,6 +27,34 @@
 	}
 	export default {
 		name: 'wcSwiper',
+		props: {
+			/*一次滑动的默认时间*/
+			duration: {
+				default: 500
+			},
+			/*两次滑动的间隔时间*/
+			interval: {
+				default: 2500
+			},
+			/*是否自动播放*/
+			autoplay: {
+				default: true
+			},
+			/*用户滑动多少距离, 翻页*/
+			therehold: {
+				default: 110
+			},
+			curSlide: {
+				default: 0
+			}
+		},
+		// watch: {
+		// 	curSlide (destSlide, oldSlide) {
+		// 		console.log('新到',destSlide, oldSlide)
+		// 		// this.setDefaultSlide();
+		// 		this.translateX(-this.swiperWidth * (destSlide + 1));
+		// 	}
+		// },
 		data () {
 			return {
 				swiper: null,
@@ -35,20 +62,20 @@
 				swiperWidth: 0,
 				slides: null,
 				slidesNumber: 0,
+				/*currentSlide 的值也就真正在 play 函数里面使用到了*/
 				currentSlide: 0,	
 				timer: null,
-				interval: 2000,
-				duration: 300,
+				// interval: 2000,
+				// duration: 300,
 				userDuration: 200,
 				pos: {
 					startX: 0,
 					moveX: 0,
 					endX: 0, 
 					local: 0,
-					distance: 0,
-					direction: ''
+					distance: 0
 				},
-				therehold: 110,
+				// therehold: 110,
 				moving: false,
 				unlock: false,
 				activeId: '',
@@ -61,8 +88,12 @@
 			this.cloneSlide();
 			/*克隆结束之后, 需要设置默认显示的slide*/
 			this.setDefaultSlide();
+			// this.translateX(-this.swiperWidth * (this.currentSlide + 1));
 			/*设置默认slide之后, 就需要开始设置定时器, 自动轮播*/
-			this.play();
+			if (this.autoplay) {
+				this.play();
+			}
+			
 		},
 		methods: {
 			/*阻止容器的上下滚动*/
@@ -82,49 +113,63 @@
 				/*克隆节点之后, 需要 reset 一些属性*/
 				this.slides = toArray(this.swiper.children);
 				this.slidesNumber = this.slides.length;
-				/*真正的 slides 数量*/
+
 			},
 			setDefaultSlide () {
-				if (this.currentSlide < 0) {
-					this.currentSlide = 0
-				} else if (this.currentSlide > this.slidesNumber - 2) {
+				if (this.curSlide < 0) {
 					this.currentSlide = 0;
+				} else if (this.curSlide >= this.slidesNumber - 1) {
+					this.currentSlide = this.slidesNumber - 3;
+				} else {
+					this.currentSlide = this.curSlide;
 				}
-				/* +1 是为了屏蔽掉我们主动追加的两个 slide 的影响 */
-				this.currentSlide = this.currentSlide + 1; 
-				this.translateX(-this.swiperWidth*this.currentSlide);
+				// this.translateX(-this.swiperWidth);
+				// if (this.currentSlide < 0) {
+				// 	this.currentSlide = 0
+				// } else if (this.currentSlide > this.slidesNumber - 2) {
+				// 	this.currentSlide = 0;
+				// }
+				// console.log(this.currentSlide,'fdasf')
+				// /* +1 是为了屏蔽掉我们主动追加的两个 slide 的影响 */
+				// this.currentSlide = this.currentSlide + 1; 
+				// this.translateX(-this.swiperWidth*this.currentSlide);
+				this.translateX(-this.swiperWidth * (this.currentSlide + 1));
 			},
 			play () {
 				this.timer = setTimeout(()=>{
 					clearTimeout(this.timer);
 					this.moving = true;
 					this.unlock = false;
-					this.currentSlide++;
+					// this.currentSlide++;
 					this.transitionDuration(this.duration);
-						this.translateX(-this.swiperWidth*this.currentSlide);
+					// let left = - (this.swiperWidth + Math.abs(this.left()));
+					this.translateX(- (this.swiperWidth + Math.abs(this.left())));
 					/*及时清除定时器*/
 				}, this.interval);
 			},
 			transitionend () {
 				this.moving = false;
-				let left = Math.abs(this.left());
-				let y = left/this.swiperWidth;
-				this.currentSlide = y;
-				if (y === this.slidesNumber - 1) {
+				/*
+					通过当前的位置, 来设置 currentSlide 的值
+				*/	
+				this.currentSlide = Math.abs(this.left())/this.swiperWidth;
+				if (this.currentSlide === this.slidesNumber - 1) {
 					this.transitionDuration(0);
 					this.translateX(-this.swiperWidth*1);
 					this.currentSlide = 1;
 				}
-				if (y === 0) {
-					console.log('slide 怎么会是 0, 我要瞬间跳转过去')
+				if (this.currentSlide === 0) {
 					this.transitionDuration(0);
 					this.translateX(-this.swiperWidth * (this.slidesNumber - 2))
 					this.currentSlide = this.slidesNumber - 2;
-					console.log('现在跳转完毕了, ', this.currentSlide)
-					console.log(this.left())
 				}
-				this.play();
+				this.$emit('transitionend', this.currentSlide - 1);
+
+				if (this.autoplay) {
+					this.play();
+				}
 			},
+			/*toushstart handler*/
 			s (e) {
 				this.activeId = toArray(e.changedTouches)[0].identifier;
 				if (!this.moving) {
@@ -137,6 +182,7 @@
 					this.pos.local = this.left();
 				}
 			},
+			/*toushmove handler*/
 			m (e) {
 				if (!this.moving && this.unlock) {
 					let active = e.touches.length - 1;
@@ -145,6 +191,7 @@
 					this.translateX(this.pos.local + this.pos.distance);
 				}
 			},
+			/*toushend handler*/
 			e (e) {
 				let curId = toArray(e.changedTouches)[0].identifier;
 				if (!this.moving && this.unlock && (curId == this.activeId)) {
@@ -156,9 +203,10 @@
 			},
 			recover () {
 				this.transitionDuration(this.userDuration);
-				let left = Math.abs(this.left());
-				let distance = left % this.swiperWidth;
+				
+				let distance = Math.abs(this.left()) % this.swiperWidth;
 				let point = [];
+				let direction = ''
 				/*
 					主要是为了拿到当前状态下面, swiper 距离正常状态的, 左右移动的距离分别是多少. 
 				*/
@@ -167,7 +215,7 @@
 				} else {
 					point = [this.swiperWidth - distance, distance];
 				}
-				let direction = ''
+				
 				if (this.pos.distance > 0) {
 					direction = 'to-right';
 				} else if (this.pos.distance < 0){
@@ -175,8 +223,11 @@
 				} else {
 					direction = 'none';
 				}
+
 				if (direction == 'none') {
-					this.play();
+					if (this.autoplay) {
+						this.play();
+					}
 				}
 				if (direction === 'to-right') {
 					this.moving = true;

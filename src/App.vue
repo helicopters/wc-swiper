@@ -42,14 +42,24 @@
 .e {
   background: #827893;
 }
-
+.z {
+  background: #456789;
+}
 </style>
 <template>
   <div id="app">
       <div class="header" v-if="list.length">
+        <div class="btn" @click="s4">跳转到第四个</div>
 
-        <wc-swiper :duration="300" :interval="200" :pagination="true" :autoplay="false" @transitionend="fn">
-          
+        <wc-swiper :therehold="300" :duration="300" :interval="1000" :pagination="true" :autoplay="true" @transitionend="fn" :curSlide="curSlide">
+         
+
+
+          <wc-slide class="slide z" @click="ri">
+              0
+              <!-- <p>1</p> -->
+          </wc-slide>
+
           <wc-slide class="slide a">
               1
               <!-- <p>1</p> -->
@@ -86,12 +96,19 @@
     name: 'app',
     data () {
       return {
-        list: [1]
+        list: [1],
+        curSlide: 1000
       }
     },
     methods: {
       fn (v) {
-        // console.log(v)
+        console.log('transitionend',v)
+      },
+      ri () {
+        console.log('我点击了')
+      },
+      s4 () {
+        this.curSlide = 4;
       }
     }
   }

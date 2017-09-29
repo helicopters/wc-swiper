@@ -7,12 +7,17 @@
 }
 </style>
 <template>
-	<div class="wc-slide">
+	<div class="wc-slide" @click="clickHandler">
 		<slot/>
 	</div>
 </template>
 <script>
 	export default {
-		name: 'wcSlide'
+		name: 'wcSlide',
+		methods: {
+			clickHandler () {
+				this.$emit('click');
+			}
+		}
 	}
 </script>
