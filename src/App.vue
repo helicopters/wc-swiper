@@ -1,11 +1,5 @@
 <style>
-* {
-  -webkit-backface-visibility: hidden;
-}
 
-body {
-  -webkit-transform: translate3d(0, 0, 0);
-}
     .slide {
       height: 50%;
       width: 100%;
@@ -48,6 +42,7 @@ body {
 .e {
   background: #827893;
 }
+
 </style>
 <template>
   <div id="app">
@@ -57,6 +52,7 @@ body {
           
           <wc-slide class="slide a">
               1
+              <!-- <p>1</p> -->
           </wc-slide>
 
 

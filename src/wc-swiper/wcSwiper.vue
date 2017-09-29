@@ -11,13 +11,16 @@
   display: flex;
   /*防止滑动闪烁的*/
   // transform: translate3d(0px, 0, 0);
-  -webkit-transform: translate3d(0px, 0, 0);
-  -moz-transform: translate3d(0px, 0, 0);
-  -o-transform: translate(0px, 0px);
-  -ms-transform: translate3d(0px, 0, 0);
-  transform: translate3d(0px, 0, 0);
+  // -webkit-transform: translate3d(0px, 0, 0);
+  // -moz-transform: translate3d(0px, 0, 0);
+  // -o-transform: translate(0px, 0px);
+  // -ms-transform: translate3d(0px, 0, 0);
+  // transform: translate3d(0px, 0, 0);
 
-
+	// transform-property:transform;
+	// // transform-style:presv
+	// transform-style: preserve-3d;
+	// -webkit-transform-style: preserve-3d;
 
 }
 
@@ -85,7 +88,7 @@
 			this.setDefaultSlide();
 
 			/*设置默认slide之后, 就需要开始设置定时器, 自动轮播*/
-			// this.play();
+			this.play();
 
 			/*
 				除去第一次, 是我们主动轮播, 其他都是 transitionend 触发, 在 swiper 上面绑定 
@@ -94,6 +97,9 @@
 				// swiperContainer.addEventListener('touchmove', function(e) {
 				//     e.preventDefault();
 				// }, false);
+
+
+
 
 		},
 		methods: {
@@ -181,11 +187,11 @@
 
 				let y = left/this.swiperWidth;
 
-				console.log(y);
+				
 				this.currentSlide = y;
 
 				if (y === this.slidesNumber - 1) {
-					console.log('此时这个是最后一个 slide, 我要进行瞬间的替换, 替换到第1个 slide, slide 从 0 开始计数的');
+					
 
 					this.transitionDuration(0);
 					this.translateX(-this.swiperWidth*1);
@@ -194,14 +200,14 @@
 				}
 
 				if (y === 0) {
-					console.log('这个世第一个 slide, 啊我要跳转到哪一个呢, 跳到倒数第二个')
+					
 					this.transitionDuration(0);
 					this.translateX(-this.swiperWidth * (this.slidesNumber - 2))
 					this.currentSlide = this.slidesNumber - 1;
 				}
 				
 
-				// this.play();
+				this.play();
 				
 
 				
@@ -223,18 +229,18 @@ transtionend 始终不会触发.
 			s (e) {
 
 				
-				console.log('start 事件触发了')
+				console.log('start 触发了')
 
 				// let left = this.left();
 
 				// let xx = left/this.swiperWidth;
 
-				// console.log(Math.ceil(xx))
+				// 
 
-				// console.log(this.slidesNumber - 1, Math.abs(Math.floor(xx)));
+				// 
 
 				// if (Math.abs(Math.floor(xx)) >= this.slidesNumber - 1) {
-				// 	console.log('我日, 这是最后一个了')
+				// 	
 				// 	// this.lock = false;
 				// 	// this.moving = true;
 				// 	this.lock = false;
@@ -245,8 +251,8 @@ transtionend 始终不会触发.
 
 
 
-				// console.log()
-				console.log(this.currentSlide,'fdsafafasdfdas')
+				// 
+				
 
 				// that.activeID = toArray(e.changedTouches)[0].identifier;
 
@@ -292,7 +298,7 @@ init 状态, 此时 swiper 静止, touchstart, 如果不动, 则希望 swiper �
 			},
 			m (e) {
 
-				console.log('touchmove 事件触发了')
+				console.log('move 触发了')
 				if (!this.moving && this.lock) {
 					// clearTimeout(this.timer);
 					
@@ -308,6 +314,7 @@ init 状态, 此时 swiper 静止, touchstart, 如果不动, 则希望 swiper �
 			},
 			e (e) {
 
+				console.log('end 触发了')
 				// var cur = e.touches.length - 1;
 				let curId = toArray(e.changedTouches)[0].identifier;
 
@@ -339,8 +346,8 @@ init 状态, 此时 swiper 静止, touchstart, 如果不动, 则希望 swiper �
 
 				let left = Math.abs(this.left());
 
-				// console.log(left% this.swiperWidth);
-				// console.log(this.swiperWidth - 1)
+				// 
+				// 
 				let distance = left % this.swiperWidth;
 
 				let point = [];
@@ -359,7 +366,7 @@ init 状态, 此时 swiper 静止, touchstart, 如果不动, 则希望 swiper �
 
 				// let point = [this.swiperWidth - distance, distance];
 
-				// console.log(point);
+				// 
 
 				let direction = ''
 				if (this.pos.distance > 0) {
@@ -388,11 +395,11 @@ init 状态, 此时 swiper 静止, touchstart, 如果不动, 则希望 swiper �
 				if (direction === 'to-right') {
 					/*说明需要向右边移动*/
 					if (point[0] > this.therehold) {
-						// console.log('ria')
+						// 
 
-						console.log('当前的距离', this.left())
-						console.log('需要向右移动的距离', point[1]);
-						console.log('理论上移动结束的距离', this.left() + point[1]);
+						
+						
+						
 
 						this.translateX(this.left() + point[1]);
 
@@ -400,12 +407,12 @@ init 状态, 此时 swiper 静止, touchstart, 如果不动, 则希望 swiper �
 							也就是在这里加一个判断
 						*/
 						let next = (this.left() + point[1]) / this.swiperWidth;
-						console.log(next,'岁月静好');
+						
 
 						// this.currentSlide = Math.abs(next);
 
 						if (Math.abs(next) === 0) {
-							console.log('这次 touch 结束到第0 ge ')
+							
 
 							this.moving = true;
 						}
@@ -416,10 +423,10 @@ init 状态, 此时 swiper 静止, touchstart, 如果不动, 则希望 swiper �
 
 
 					} else {
-						console.log('移动的距离不太够, 所以要恢复之前的状态');
-						console.log('当前的距离', this.left())
-						console.log('需要向左边移动的距离', point[0]);
-						console.log('理论上移动结束的距离', this.left() - point[0]);
+						
+						
+						
+						
 
 						this.translateX(this.left() - point[0]);
 
@@ -430,17 +437,17 @@ init 状态, 此时 swiper 静止, touchstart, 如果不动, 则希望 swiper �
 				if (direction === 'to-left') {
 					/*此时就说明需要往左边补全移动距离*/
 					if (point[1] > this.therehold) {
-						console.log('当前的距离', this.left())
-						console.log('需要向左边移动的距离', point[0]);
-						console.log('理论上移动结束的距离', this.left() - point[0]);
+						
+						
+						
 
 						this.translateX(this.left() - point[0]);
 
 						let next = (this.left() - point[0]) / this.swiperWidth;
-						console.log(next,'岁月静好');
+						
 
 						if (Math.abs(next) === this.slidesNumber - 1) {
-							console.log('这次 touch 结束会到达最后一个')
+							
 
 							this.moving = true;
 						}
@@ -451,10 +458,10 @@ init 状态, 此时 swiper 静止, touchstart, 如果不动, 则希望 swiper �
 
 					} else {
 
-						console.log('移动的距离不太够')
-						console.log('当前的距离', this.left())
-						console.log('需要向左边移动的距离', point[0]);
-						console.log('理论上移动结束的距离', this.left() + point[1]);
+						
+						
+						
+						
 
 						this.translateX(this.left() + point[1]);
 
@@ -464,7 +471,7 @@ init 状态, 此时 swiper 静止, touchstart, 如果不动, 则希望 swiper �
 
 
 
-				// console.log(direction)
+				// 
 
 			},
 
@@ -476,6 +483,7 @@ init 状态, 此时 swiper 静止, touchstart, 如果不动, 则希望 swiper �
 
 			translateX (value) {
 				this.swiper.style.transform = 'translate3d(' + value + 'px, 0, 0)';
+				// this.swiper.style.left = value + ''
 			},
 			transitionDuration (ms) {
 				this.swiper.style.transitionDuration = ms + 'ms';
