@@ -77,6 +77,23 @@ transform: translate3d(0px, 0, 0);
 这么一句话导致的, 是这么个原因导致的, 我草草丛哦哦
 
 
+现在依旧存在一个 bug:
+当滑动的时候, 你把手指放上去, 然后等到 transitionend 会将 moving 设置为 false
+也就是说此时又可以滑动了, 然后你又滑动, 此时 touchmove 会触发, 也就是说, 
+
+主要是这么一个 bug,
+
+当在 interval 的时候, 也就是 moving = false 的时候, 然后 touchstart, 会导致解锁
+
+
+还有一个 bug, 当处于 not moving 的时候, touchstart 会导致 clearTimeout()
+这个都可以接受, 但是
+
+还是要必须拆出来一个状态, 我们的设置是, 当 not moving 的时候, touch 会阻塞 moving
+当 moving, 的时候
+
+
+moving , 用户主动滑动松开, 
 
 
 
