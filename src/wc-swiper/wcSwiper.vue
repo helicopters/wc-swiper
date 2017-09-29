@@ -100,7 +100,7 @@
 					clearTimeout(this.timer);
 
 					/*说明要往右边滑动*/
-					this.transitionDuration(Math.min(100* (index - cur), 500))
+					this.transitionDuration(300);
 					this.currentSlide = index;
 					this.translateX(-this.swiperWidth * (this.currentSlide + 1));
 				}
@@ -160,19 +160,19 @@
 				this.moving = false;
 				/*
 					通过当前的位置, 来设置 currentSlide 的值
-				*/	
+				*/
+				this.transitionDuration(0);	
 				this.currentSlide = Math.abs(this.left())/this.swiperWidth;
 				if (this.currentSlide === this.slidesNumber - 1) {
-					this.transitionDuration(0);
 					this.translateX(-this.swiperWidth*1);
 					this.currentSlide = 1;
 				}
-				if (this.currentSlide === 0) {
-					this.transitionDuration(0);
+				if (this.currentSlide === 0) {	
 					this.translateX(-this.swiperWidth * (this.slidesNumber - 2))
 					this.currentSlide = this.slidesNumber - 2;
 				}
 				this.$emit('transitionend', this.currentSlide - 1);
+
 				if (this.autoplay) {
 					this.play();
 				}
@@ -184,16 +184,17 @@
 					this.pos.startX = e.pageX;
 					
 					this.pos.local = this.left();
-
-					this.transitionDuration(0);
 					clearTimeout(this.timer);
+					this.transitionDuration(0);
+					
 
 				} else{
 					this.activeId = toArray(e.changedTouches)[0].identifier;
 					if (!this.moving) {
 						let active = e.touches.length - 1;
-						this.transitionDuration(0);
 						clearTimeout(this.timer);
+						this.transitionDuration(0);
+						
 						this.unlock = true;
 						this.pos.startX = e.touches[active].clientX;
 						/* 一次 touch 的 起始local 点, 是固定的 */
