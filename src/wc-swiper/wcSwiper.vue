@@ -239,6 +239,7 @@
 				}
 
 			},
+			/*响应用户滚动行为*/
 			recover () {
 				this.transitionDuration(this.userDuration);
 				let distance = Math.abs(this.left()) % this.swiperWidth;

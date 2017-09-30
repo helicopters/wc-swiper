@@ -66,7 +66,7 @@ duration:	一次滑动的时间 | default: 500ms
 interval:	两次滑动间隔时间 | default: 2500ms
 autoplay:	是否自动播放 | default: true
 therehold:	用户滑动多少距离之后自动翻页 | default: 110
-curSlide:   默认显示第几个 slide | default: 0
+curSlide:	默认显示第几个 slide | default: 0
 
 ```
 
