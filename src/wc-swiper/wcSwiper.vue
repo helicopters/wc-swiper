@@ -157,7 +157,7 @@
 				}, this.interval);
 			},
 			transitionend () {
-				this.moving = false;
+				
 				/*
 					通过当前的位置, 来设置 currentSlide 的值
 				*/
@@ -172,6 +172,11 @@
 					this.currentSlide = this.slidesNumber - 2;
 				}
 				this.$emit('transitionend', this.currentSlide - 1);
+				/*
+					防止极限操作, 用户在滑动结束之后事件还没发送出去又滑动导致计算
+					结果错误, 所以等事件发出去之后再解开. 
+				*/
+				this.moving = false;
 
 				if (this.autoplay) {
 					this.play();
