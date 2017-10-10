@@ -51,7 +51,7 @@
 		data () {
 			return {
 				swiper: null,
-				swiperContainer: null,
+				// swiperContainer: null,
 				swiperWidth: 0,
 				slides: null,
 				slidesNumber: 0,
@@ -99,7 +99,12 @@
 					this.moving = true;
 					clearTimeout(this.timer);
 
-					/*说明要往右边滑动*/
+					/*
+						说明要往右边滑动
+						注意这里不管需要滑动多少个, duration 都是 300, 这个如果需要, 可以
+						自己根据起点/终点计算出一个合适的值. 
+					*/
+
 					this.transitionDuration(300);
 					this.currentSlide = index;
 					this.translateX(-this.swiperWidth * (this.currentSlide + 1));
@@ -122,7 +127,7 @@
 				}				
 			},
 			initElement () {
-				this.swiperContainer = document.querySelector('.wc-swiper-container');
+				// this.swiperContainer = document.querySelector('.wc-swiper-container');
 				this.swiper = document.querySelector('.wc-swiper-box');
 				this.swiperWidth = this.swiper.clientWidth;
 				this.slides = toArray(this.swiper.children);
@@ -133,7 +138,7 @@
 				let tail = this.slides[this.slidesNumber - 1].cloneNode(this.slides[this.slidesNumber-1], true);
 				this.swiper.appendChild(head);
 				this.swiper.insertBefore(tail, this.slides[0]);
-				/*克隆节点之后, 需要 reset 一些属性*/
+				/*克隆节点之后, 需要重置一些属性*/
 				this.slides = toArray(this.swiper.children);
 				this.slidesNumber = this.slides.length;
 			},
@@ -157,7 +162,6 @@
 				}, this.interval);
 			},
 			transitionend () {
-				
 				/*
 					通过当前的位置, 来设置 currentSlide 的值
 				*/
@@ -174,7 +178,7 @@
 				this.$emit('transitionend', this.currentSlide - 1);
 				/*
 					防止极限操作, 用户在滑动结束之后事件还没发送出去又滑动导致计算
-					结果错误, 所以等事件发出去之后再解开. 
+					结果错误, 所以等事件发出去之后再解开 
 				*/
 				this.moving = false;
 
