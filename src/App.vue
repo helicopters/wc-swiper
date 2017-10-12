@@ -106,6 +106,7 @@
       },
       transitionend (current) {
         // console.log('')
+        console.log(current,'dangqin')
         this.currentSlide = current;
         document.querySelector('.text').innerHTML = '当前是第' + current + '个 slide';
       },

@@ -166,7 +166,11 @@
 					通过当前的位置, 来设置 currentSlide 的值
 				*/
 				this.transitionDuration(0);	
-				this.currentSlide = Math.abs(this.left())/this.swiperWidth;
+				/*
+					因为 this.left() 获取的值不一定必定是 this.swiperWidth 的整数倍
+					所以需要取整
+				*/
+				this.currentSlide = Math.round(Math.abs(this.left())/this.swiperWidth);
 				if (this.currentSlide === this.slidesNumber - 1) {
 					this.translateX(-this.swiperWidth*1);
 					this.currentSlide = 1;
