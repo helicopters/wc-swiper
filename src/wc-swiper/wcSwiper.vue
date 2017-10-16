@@ -16,6 +16,7 @@
         <div class="wc-swiper-box" @transitionend="transitionend" @touchstart="s" @touchmove="m" @touchend="e" @mousedown="s" @mousemove="m" @mouseup="e">
 			<slot/>
         </div>
+
         <slot name="pagination"/>
         <slot name="arrowLeft"/>
         <slot name="arrowRight"/>
@@ -44,18 +45,16 @@
 			therehold: {
 				default: 110
 			},
-			curSlide: {
+			defaultSlide: {
 				default: 0
 			}
 		},
 		data () {
 			return {
 				swiper: null,
-				// swiperContainer: null,
 				swiperWidth: 0,
 				slides: null,
 				slidesNumber: 0,
-				/*currentSlide 的值也就真正在 play 函数里面使用到了*/
 				currentSlide: 0,	
 				timer: null,
 				userDuration: 200,
@@ -79,7 +78,10 @@
 			this.cloneSlide();
 			/*克隆结束之后, 需要设置默认显示的slide*/
 			this.setDefaultSlide();
-			/*设置默认slide之后, 就需要开始设置定时器, 自动轮播*/
+			/*
+				## start
+				设置默认slide之后, 就需要开始设置定时器, 自动轮播
+			*/
 			if (this.autoplay) {
 				this.play();
 			}
@@ -90,24 +92,21 @@
 			/*滑动到指定的页面*/
 			slideTo (index) {
 				if (!this.moving) {
-
-					let cur = this.currentSlide - 1;
-					if (index > this.slidesNumber - 3 || index < 0 || cur == index) {
+					let currentSlide = Math.round(Math.abs(this.left())/this.swiperWidth);
+					/* 如果索引值不合法 或者和目前的值相等 */
+					if (index > this.slidesNumber - 2 - 1 || index < 0 || currentSlide == index + 1) {
 						return;
 					} 
-
 					this.moving = true;
 					clearTimeout(this.timer);
-
 					/*
 						说明要往右边滑动
 						注意这里不管需要滑动多少个, duration 都是 300, 这个如果需要, 可以
 						自己根据起点/终点计算出一个合适的值. 
 					*/
-
 					this.transitionDuration(300);
-					this.currentSlide = index;
-					this.translateX(-this.swiperWidth * (this.currentSlide + 1));
+					
+					this.translateX(-this.swiperWidth * (index + 1));
 				}
 			},
 			next () {
@@ -127,7 +126,6 @@
 				}				
 			},
 			initElement () {
-				// this.swiperContainer = document.querySelector('.wc-swiper-container');
 				this.swiper = document.querySelector('.wc-swiper-box');
 				this.swiperWidth = this.swiper.clientWidth;
 				this.slides = toArray(this.swiper.children);
@@ -142,16 +140,29 @@
 				this.slides = toArray(this.swiper.children);
 				this.slidesNumber = this.slides.length;
 			},
+			/* 根据用户给定的 defaultSlide 设置 init slide 的值 */
 			setDefaultSlide () {
-				if (this.curSlide < 0) {
-					this.currentSlide = 0;
-				} else if (this.curSlide >= this.slidesNumber - 1) {
-					this.currentSlide = this.slidesNumber - 3;
-				} else {
-					this.currentSlide = this.curSlide;
+
+				/* 
+
+					一切用户给定的值, 都是从 0 - x 开始, 比如用户数据里面有 6个数据
+					那么给定的就是 0 - 5
+					但是我们内部运算的时候, 实际上我们的索引能到 0 - 7
+					0 是实际的 5 的拷贝, 7 实际上是实际的0的拷贝
+					
+					所以当用户给定的 defaultSlide =0, 我们实际上是要让展示内部索引为 1 的元素
+
+				*/
+
+				/* 如果用户设置了一个非法值, 直接抛出异常*/
+				if (this.defaultSlide < 0 || this.defaultSlide > this.slidesNumber - 2 - 1) {
+					throw new Error('[wc-swiper:Error]: You have set a wrong defaultSlide value');
 				}
-				this.translateX(-this.swiperWidth * (this.currentSlide + 1));
+				this.translateX(-this.swiperWidth * (this.defaultSlide + 1));	
 			},
+			/*
+				## start
+			*/
 			play () {
 				this.timer = setTimeout(()=>{
 					clearTimeout(this.timer);
@@ -162,30 +173,36 @@
 				}, this.interval);
 			},
 			transitionend () {
-				/*
-					通过当前的位置, 来设置 currentSlide 的值
-				*/
 				this.transitionDuration(0);	
+
 				/*
-					因为 this.left() 获取的值不一定必定是 this.swiperWidth 的整数倍
-					所以需要取整
+					一次滑动结束之后, 通过计算, 实际上我们可以拿到当前处于内部索引的第几个 slide
+					拿到这个 currentSlide 我们就知道当前是不是滚动到最后一个了
 				*/
-				this.currentSlide = Math.round(Math.abs(this.left())/this.swiperWidth);
-				if (this.currentSlide === this.slidesNumber - 1) {
-					this.translateX(-this.swiperWidth*1);
-					this.currentSlide = 1;
+				let currentSlide = Math.round(Math.abs(this.left())/this.swiperWidth);
+
+				this.currentSlide = currentSlide - 1;
+				/* 如果滚动到最后一个, 那么就要瞬间跳转一下, 到外部看起来的第一个, 内部的*/
+				if (currentSlide == this.slidesNumber - 1) {
+					
+					this.translateX(-this.swiperWidth);
+					this.currentSlide = 0;
+					
 				}
-				if (this.currentSlide === 0) {	
+				if (currentSlide == 0) {	
 					this.translateX(-this.swiperWidth * (this.slidesNumber - 2))
-					this.currentSlide = this.slidesNumber - 2;
+					this.currentSlide = this.slidesNumber - 3;
 				}
-				this.$emit('transitionend', this.currentSlide - 1);
+
+				this.$emit('transitionend', this.currentSlide);
 				/*
 					防止极限操作, 用户在滑动结束之后事件还没发送出去又滑动导致计算
 					结果错误, 所以等事件发出去之后再解开 
 				*/
 				this.moving = false;
-
+				/*
+					##start
+				*/
 				if (this.autoplay) {
 					this.play();
 				}
@@ -195,31 +212,24 @@
 				if (e.type === 'mousedown' && !this.moving) {
 					this.mousedown = true;
 					this.pos.startX = e.pageX;
-					
 					this.pos.local = this.left();
 					clearTimeout(this.timer);
 					this.transitionDuration(0);
-					
-
 				} else{
 					this.activeId = toArray(e.changedTouches)[0].identifier;
 					if (!this.moving) {
 						let active = e.touches.length - 1;
 						clearTimeout(this.timer);
 						this.transitionDuration(0);
-						
 						this.unlock = true;
 						this.pos.startX = e.touches[active].clientX;
 						/* 一次 touch 的 起始local 点, 是固定的 */
 						this.pos.local = this.left();
 					}
 				}
-
-
 			},
 			/*toushmove handler*/
 			m (e) {
-
 				if (e.type === 'mousemove' && this.mousedown && !this.moving) {
 					this.pos.moveX = e.pageX;
 					this.pos.distance = this.pos.moveX - this.pos.startX;
@@ -232,7 +242,6 @@
 						this.translateX(this.pos.local + this.pos.distance);
 					}					
 				}
-
 			},
 			/*toushend handler*/
 			e (e) {
@@ -250,7 +259,6 @@
 						this.recover();
 					}					
 				}
-
 			},
 			/*响应用户滚动行为*/
 			recover () {

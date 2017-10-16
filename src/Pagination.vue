@@ -25,8 +25,7 @@
 </style>
 <template>
 	<div class="wc-pagination">
-		<div class="wc-dot" v-for="v in dots" :class="{'wc-dot-active': active== v-1}">
-
+		<div class="wc-dot" v-for="(value, key) in dots" :key="key" :class="{'wc-dot-active': active== key}">
 		</div>	
 	</div>
 </template>

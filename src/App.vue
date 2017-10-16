@@ -47,6 +47,9 @@
   .e {
     background: #333391;
   }
+  .f {
+    background: red;
+  }
   .slide {
     font-size: 50px;
     display: flex;
@@ -59,7 +62,8 @@
 </style>
 <template>
   <div class="container">
-    <wc-swiper class="swiper" v-if="list.length" @transitionend="transitionend" ref="swiper">
+    <wc-swiper class="swiper" v-if="list.length" @transitionend="transitionend" ref="swiper"
+      :defaultSlide="0" :interval="1500">
         <wc-slide v-for="(v, k) in list" :key="k" :class="map[k]">
           {{v}}
         </wc-slide>
@@ -92,7 +96,8 @@
           1: 'slide b',
           2: 'slide c',
           3: 'slide d',
-          4: 'slide e'
+          4: 'slide e',
+          5: 'slide f'
         },
         currentSlide: 0
       }
@@ -102,11 +107,11 @@
     },
     methods: {
       fetchList () {
-        this.list = [1,2,3,4,5];
+        this.list = [0,1,2,3,4,5];
       },
       transitionend (current) {
         // console.log('')
-        console.log(current,'dangqin')
+        // console.log(current,'dangqin')
         this.currentSlide = current;
         document.querySelector('.text').innerHTML = '当前是第' + current + '个 slide';
       },
