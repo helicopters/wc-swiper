@@ -63,12 +63,10 @@
 <template>
   <div class="container">
     <wc-swiper class="swiper" v-if="list.length" @transitionend="transitionend" ref="swiper"
-      :defaultSlide="0" :interval="1500">
+      :defaultSlide="0" :interval="1500" :pagination="true">
         <wc-slide v-for="(v, k) in list" :key="k" :class="map[k]">
           {{v}}
         </wc-slide>
-
-        <pagination :dots="list.length" :active="currentSlide" slot="pagination"/>
     </wc-swiper>  
 
     <div class="text">当前是第{{currentSlide}}个slide</div>  
@@ -82,12 +80,9 @@
 
 </template>
 <script>
-  import Pagination from './Pagination'
+
   export default {
     name: 'App',
-    components: {
-      Pagination
-    },
     data () {
       return {
         list: [],

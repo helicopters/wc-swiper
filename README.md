@@ -55,8 +55,14 @@ Vue.use(wcSwiper);
 	</wc-slide>
 </wc-swiper>
 
-
 ```
+## 注意
+所有的配置参数, 都必须使用动态props 而不能使用字面量Props:
+```html
+<wc-swiper :duration="1500"> // 正确
+<wc-swiper duration="1500">  // 错误
+```
+
 
 ## 配置
 在 wc-swiper 上面暴露了一些配置选项:
@@ -66,7 +72,8 @@ duration:	一次滑动的时间 | default: 500ms
 interval:	两次滑动间隔时间 | default: 2500ms
 autoplay:	是否自动播放 | default: true
 therehold:	用户滑动多少距离之后自动翻页 | default: 110
-defaultSlide:	默认显示索引为多少的 slide | default: 0
+defaultSlide:	默认显示索引为多少的 slide | default: 0,
+pagination:	是否显示 pagination | default: true
 
 ```
 
@@ -146,8 +153,9 @@ this.$refs.swiper.slideTo(3) // 跳转到索引为 3 的 slide
 ```
 
 **4. 怎么添加 pagination 或者左右箭头?**
-> 个人认为, pagination 以及 arrow-left, arrow-right, 都只是 swiper 的配套设施, 而不应该是组成的一部分. 所以没有提供默认的 pagination 和 arrow, 而是提供了 slot, 如果你希望
-为 swiper 添加 pagination 或者 arrow, 可以通过这样的方式添加: 
+> 首先, 对于 pagination 这种常用的功能, 内置了一个默认的 pagination; 如果样式不满意, 可以通过重置
+样式来定制; 其次, 在我看来, pagination 以及左右箭头, 都只是 swiper 的配套设施而不是组成部分. 所以
+如果你想要使用自己定义的 pagination, 可以通过 slot 覆盖掉原来的 pagination 或者左右箭头. 
 
 ```html
 <wc-swiper>
@@ -157,7 +165,6 @@ this.$refs.swiper.slideTo(3) // 跳转到索引为 3 的 slide
 </wc-swiper>
 ```
 
-可以参考这个的写法: ![Pagination](https://github.com/helicopters/wc-swiper/blob/master/src/Pagination.vue)
 
 ## 存在的问题
 * 多指触碰的时候, 比如多根手指同时滑动的时候, 就会出现问题, 这种极端情况, 比较复杂和少见, 暂时不考虑. 

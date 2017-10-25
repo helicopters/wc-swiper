@@ -10,6 +10,29 @@
   width: 100%;
   display: flex;
 }
+// 分页
+.wc-pagination {
+	position: absolute;
+	bottom: 10px;
+	height: 18px;
+	width: 100%;
+	background: transparent;
+	display: flex;
+	align-items:center;
+	justify-content: center;
+	.wc-dot {
+		height: 8px;
+		width: 8px;
+		background: #000;
+		opacity: 0.2;
+		margin: 0 5px;
+		border-radius: 50%;
+	}
+	.wc-dot-active {
+		opacity: 1;
+		background: #3498db;
+	}
+}
 </style>
 <template>
     <div class="wc-swiper-container" @touchmove.prevent="fn">
@@ -17,7 +40,14 @@
 			<slot/>
         </div>
 
-        <slot name="pagination"/>
+        <slot name="pagination">
+        	<!-- 默认提供了一个 pagination -->
+			<div class="wc-pagination" v-if="pagination">
+				<div class="wc-dot" v-for="(value, key) in reallySlidesNumber" :key="key" :class="{'wc-dot-active': currentSlide== key}">
+				</div>	
+			</div>
+        </slot>
+        <!-- 这两个就不默认提供了 -->
         <slot name="arrowLeft"/>
         <slot name="arrowRight"/>
     </div>
@@ -47,6 +77,9 @@
 			},
 			defaultSlide: {
 				default: 0
+			},
+			pagination: {
+				default: true
 			}
 		},
 		data () {
@@ -55,6 +88,7 @@
 				swiperWidth: 0,
 				slides: null,
 				slidesNumber: 0,
+				reallySlidesNumber: 0,
 				currentSlide: 0,	
 				timer: null,
 				userDuration: 200,
@@ -130,6 +164,8 @@
 				this.swiperWidth = this.swiper.clientWidth;
 				this.slides = toArray(this.swiper.children);
 				this.slidesNumber = this.slides.length;
+				/*实际的 slide 个数, 因为 slidesNumber 会在后面重新赋值*/
+				this.reallySlidesNumber = this.slides.length;
 			},
 			cloneSlide () {
 				let head = this.slides[0].cloneNode(this.slides[0], true);
