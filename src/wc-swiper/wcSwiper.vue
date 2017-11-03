@@ -195,6 +195,8 @@
 					throw new Error('[wc-swiper:Error]: You have set a wrong defaultSlide value');
 				}
 				this.translateX(-this.swiperWidth * (this.defaultSlide + 1));	
+				//
+				this.currentSlide = this.defaultSlide;
 			},
 			/*
 				## start
