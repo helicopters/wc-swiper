@@ -196,7 +196,7 @@
 				}
 				this.translateX(-this.swiperWidth * (this.defaultSlide + 1));	
 				//
-				this.currentSlide = this.defaultSlide;
+				// this.currentSlide = this.defaultSlide;
 			},
 			/*
 				## start
