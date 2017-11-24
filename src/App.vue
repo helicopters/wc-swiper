@@ -59,6 +59,12 @@
   .text {
     margin: 10px;
   }
+
+  .global{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
 </style>
 <template>
   <div class="container">
@@ -67,7 +73,17 @@
         <wc-slide v-for="(v, k) in list" :key="k" :class="map[k]">
           {{v}}
         </wc-slide>
+        <h1 class="global" slot="g">投放广告</h1>
     </wc-swiper>  
+
+
+    <wc-swiper class="swiper" v-if="list.length" @transitionend="transitionend" ref="swiper"
+      :defaultSlide="0" :interval="1500" :pagination="true">
+        <wc-slide v-for="(v, k) in list" :key="k" :class="map[k]">
+          {{v}}
+        </wc-slide>
+    </wc-swiper>  
+
 
     <div class="text">当前是第{{currentSlide}}个slide</div>  
 

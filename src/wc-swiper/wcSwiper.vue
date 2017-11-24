@@ -3,9 +3,8 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  z-index: 1;
 }
-.wc-swiper-box {
+.wc-default-swiper-box {
   height: 100%;
   width: 100%;
   display: flex;
@@ -36,7 +35,7 @@
 </style>
 <template>
     <div class="wc-swiper-container" @touchmove.prevent="fn">
-        <div class="wc-swiper-box" @transitionend="transitionend" @touchstart="s" @touchmove="m" @touchend="e" @mousedown="s" @mousemove="m" @mouseup="e">
+        <div class="wc-default-swiper-box" :class="box" @transitionend="transitionend" @touchstart="s" @touchmove="m" @touchend="e" @mousedown="s" @mousemove="m" @mouseup="e">
 			<slot/>
         </div>
 
@@ -50,6 +49,9 @@
         <!-- 这两个就不默认提供了 -->
         <slot name="arrowLeft"/>
         <slot name="arrowRight"/>
+
+        <!-- 当你需要在全局的内容里面加一些玩意的时候 -->
+        <slot name="g"/>
     </div>
 </template>
 <script>
@@ -80,7 +82,7 @@
 			},
 			pagination: {
 				default: true
-			}
+			},
 		},
 		data () {
 			return {
@@ -102,23 +104,30 @@
 				moving: false,
 				unlock: false,
 				activeId: '',
-				mousedown: false
+				mousedown: false,
+				box: ''
 			}
 		},
 		mounted () {
-			/*初始化的时候, 拿到所有的 DOM 元素以及相关属性*/
-			this.initElement();
-			/*克隆两个节点, 用来实现 loop 效果*/
-			this.cloneSlide();
-			/*克隆结束之后, 需要设置默认显示的slide*/
-			this.setDefaultSlide();
-			/*
-				## start
-				设置默认slide之后, 就需要开始设置定时器, 自动轮播
-			*/
-			if (this.autoplay) {
-				this.play();
-			}
+
+			this.box = 'wc-swiper-box-' + Math.random().toFixed(2)*1000;
+			setTimeout(()=>{
+				/*初始化的时候, 拿到所有的 DOM 元素以及相关属性*/
+				this.initElement();
+				/*克隆两个节点, 用来实现 loop 效果*/
+				this.cloneSlide();
+				/*克隆结束之后, 需要设置默认显示的slide*/
+				this.setDefaultSlide();
+				/*
+					## start
+					设置默认slide之后, 就需要开始设置定时器, 自动轮播
+				*/
+				if (this.autoplay) {
+					this.play();
+				}
+
+			}, 100);
+
 		},
 		methods: {
 			/*阻止容器的上下滚动*/
@@ -160,7 +169,8 @@
 				}				
 			},
 			initElement () {
-				this.swiper = document.querySelector('.wc-swiper-box');
+				/* 因为传递过来的是个字符串, 所以要手动加点...*/
+				this.swiper = document.querySelector('.' + this.box);
 				this.swiperWidth = this.swiper.clientWidth;
 				this.slides = toArray(this.swiper.children);
 				this.slidesNumber = this.slides.length;
@@ -192,7 +202,7 @@
 
 				/* 如果用户设置了一个非法值, 直接抛出异常*/
 				if (this.defaultSlide < 0 || this.defaultSlide > this.slidesNumber - 2 - 1) {
-					throw new Error('[wc-swiper:Error]: You have set a wrong defaultSlide value');
+					throw new Error('[wc-swiper:Error]: You have set a wrong defaultSlide value with defaultSlide = ' + this.defaultSlide);
 				}
 				this.translateX(-this.swiperWidth * (this.defaultSlide + 1));	
 				//

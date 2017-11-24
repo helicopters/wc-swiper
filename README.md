@@ -74,7 +74,6 @@ autoplay:	是否自动播放 | default: true
 therehold:	用户滑动多少距离之后自动翻页 | default: 110
 defaultSlide:	默认显示索引为多少的 slide | default: 0,
 pagination:	是否显示 pagination | default: true
-
 ```
 
 ## 事件
@@ -165,10 +164,18 @@ this.$refs.swiper.slideTo(3) // 跳转到索引为 3 的 slide
 </wc-swiper>
 ```
 
+**5. 如果想要在 swiper 里面放一些不随着 slide 滚动的内容怎么做**
+> 提供了一个 slot
+```html
+<wc-swiper>
+	<wc-slide ...>
+	<span slot="g">固定元素</span>
+</wc-swiper>
+```
+
 
 ## 存在的问题
 * 多指触碰的时候, 比如多根手指同时滑动的时候, 就会出现问题, 这种极端情况, 比较复杂和少见, 暂时不考虑. 
-* 同一个页面存在多个 <wc-swiper> 的时候, 存在问题. 暂时没找到解决方案. 
 
 ## 项目地址
 ![wc-swiper](https://github.com/helicopters/wc-swiper)
