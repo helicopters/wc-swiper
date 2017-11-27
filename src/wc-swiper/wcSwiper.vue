@@ -34,7 +34,7 @@
 }
 </style>
 <template>
-    <div class="wc-swiper-container" @touchmove.prevent="fn">
+    <div class="wc-swiper-container" @touchmove="fn">
         <div class="wc-default-swiper-box" :class="box" @transitionend="transitionend" @touchstart="s" @touchmove="m" @touchend="e" @mousedown="s" @mousemove="m" @mouseup="e">
 			<slot/>
         </div>
@@ -105,7 +105,8 @@
 				unlock: false,
 				activeId: '',
 				mousedown: false,
-				box: ''
+				box: '',
+				isOnly: false
 			}
 		},
 		mounted () {
@@ -114,6 +115,10 @@
 			setTimeout(()=>{
 				/*初始化的时候, 拿到所有的 DOM 元素以及相关属性*/
 				this.initElement();
+
+				if (this.isOnly) {
+					return;
+				}
 				/*克隆两个节点, 用来实现 loop 效果*/
 				this.cloneSlide();
 				/*克隆结束之后, 需要设置默认显示的slide*/
@@ -130,8 +135,12 @@
 
 		},
 		methods: {
-			/*阻止容器的上下滚动*/
-			fn () {},
+			/*阻止容器的上下滚动, 并且只有在水平方向上面滚动超过 10px 才可以阻止 */
+			fn (e) {
+				if (Math.abs(this.pos.startX - this.pos.moveX) > 10) {
+					e.preventDefault();
+				}
+			},
 			/*滑动到指定的页面*/
 			slideTo (index) {
 				if (!this.moving) {
@@ -169,13 +178,20 @@
 				}				
 			},
 			initElement () {
-				/* 因为传递过来的是个字符串, 所以要手动加点...*/
+				/* 因为传递过来的是个字符串, 所以要手动加点 */
 				this.swiper = document.querySelector('.' + this.box);
 				this.swiperWidth = this.swiper.clientWidth;
 				this.slides = toArray(this.swiper.children);
 				this.slidesNumber = this.slides.length;
 				/*实际的 slide 个数, 因为 slidesNumber 会在后面重新赋值*/
 				this.reallySlidesNumber = this.slides.length;
+
+				/* 如果就仅仅只有一个 slide, 那么不克隆, 不绑定, 就纯展示就可以了 */
+
+				if (this.reallySlidesNumber === 1) {
+					this.isOnly = true;
+				}
+
 			},
 			cloneSlide () {
 				let head = this.slides[0].cloneNode(this.slides[0], true);
@@ -257,6 +273,10 @@
 			},
 			/*toushstart handler*/
 			s (e) {
+				if (this.isOnly) {
+					return;
+				}
+
 				if (e.type === 'mousedown' && !this.moving) {
 					this.mousedown = true;
 					this.pos.startX = e.pageX;
@@ -278,6 +298,11 @@
 			},
 			/*toushmove handler*/
 			m (e) {
+
+				if (this.isOnly) {
+					return;
+				}
+
 				if (e.type === 'mousemove' && this.mousedown && !this.moving) {
 					this.pos.moveX = e.pageX;
 					this.pos.distance = this.pos.moveX - this.pos.startX;
@@ -293,6 +318,11 @@
 			},
 			/*toushend handler*/
 			e (e) {
+
+				if (this.isOnly) {
+					return;
+				}
+
 				if (e.type === 'mouseup' && this.mousedown && !this.moving) {
 					this.mousedown = false;
 					this.pos.endX = e.pageX;

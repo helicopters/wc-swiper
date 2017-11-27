@@ -82,7 +82,17 @@
         <wc-slide v-for="(v, k) in list" :key="k" :class="map[k]">
           {{v}}
         </wc-slide>
-    </wc-swiper>  
+    </wc-swiper> 
+
+
+    <wc-swiper class="swiper" v-if="list.length" @transitionend="transitionend" ref="swiper"
+      :defaultSlide="0" :interval="1500" :pagination="true">
+        <wc-slide v-for="(v, k) in list2" :key="k" :class="map[k]">
+          {{v}}
+        </wc-slide>
+    </wc-swiper> 
+
+
 
 
     <div class="text">当前是第{{currentSlide}}个slide</div>  
@@ -102,6 +112,7 @@
     data () {
       return {
         list: [],
+        list2: [1],
         map: {
           0: 'slide a',
           1: 'slide b',
