@@ -68,15 +68,26 @@
 </style>
 <template>
   <div class="container">
-    <wc-swiper class="swiper" v-if="list.length" @transitionend="transitionend" ref="swiper"
+  
+    <h1>只有一个 slide </h1>
+    <!-- 只有一张图的时候 -->
+    <wc-swiper class="swiper" v-if="list.length" @transitionend="transitionend" ref="swiper2"
       :defaultSlide="0" :interval="1500" :pagination="true">
+        <wc-slide v-for="(v, k) in list2" :key="k" :class="map[k]">
+          {{v}}
+        </wc-slide>
+    </wc-swiper> 
+
+    <h1>有固定元素的时候</h1>
+    <wc-swiper class="swiper" v-if="list.length" @transitionend="transitionend" ref="swiper1"
+      :defaultSlide="3" :interval="1500" :pagination="true">
         <wc-slide v-for="(v, k) in list" :key="k" :class="map[k]">
           {{v}}
         </wc-slide>
         <h1 class="global" slot="g">投放广告</h1>
     </wc-swiper>  
 
-
+    <h1>通常情况</h1>
     <wc-swiper class="swiper" v-if="list.length" @transitionend="transitionend" ref="swiper"
       :defaultSlide="0" :interval="1500" :pagination="true">
         <wc-slide v-for="(v, k) in list" :key="k" :class="map[k]">
@@ -85,12 +96,6 @@
     </wc-swiper> 
 
 
-    <wc-swiper class="swiper" v-if="list.length" @transitionend="transitionend" ref="swiper"
-      :defaultSlide="0" :interval="1500" :pagination="true">
-        <wc-slide v-for="(v, k) in list2" :key="k" :class="map[k]">
-          {{v}}
-        </wc-slide>
-    </wc-swiper> 
 
 
 
@@ -121,7 +126,7 @@
           4: 'slide e',
           5: 'slide f'
         },
-        currentSlide: 0
+        currentSlide: 100
       }
     },
     mounted () {
