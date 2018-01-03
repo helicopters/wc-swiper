@@ -108,7 +108,7 @@
 
     <h1>通常情况</h1>
     <wc-swiper class="swiper" v-if="list.length" @transitionend="transitionend" ref="swiper"
-      :defaultSlide="0" :interval="1500" :pagination="true">
+      :defaultSlide="0" :interval="1500" :pagination="true" :vLock="true">
         <wc-slide v-for="(v, k) in list" :key="k" :class="map[k]">
           {{v}}
         </wc-slide>

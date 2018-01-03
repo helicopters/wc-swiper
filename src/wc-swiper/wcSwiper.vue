@@ -83,6 +83,10 @@
 			pagination: {
 				default: true
 			},
+			/* 有时候全屏滚动, 的确想要禁用垂直方向的滚动的时候 */
+			vLock: {
+				default: false
+			}
 		},
 		data () {
 			return {
@@ -137,7 +141,7 @@
 		methods: {
 			/*阻止容器的上下滚动, 并且只有在水平方向上面滚动超过 10px 才可以阻止 */
 			fn (e) {
-				if (Math.abs(this.pos.startX - this.pos.moveX) > 10) {
+				if (this.vLock || Math.abs(this.pos.startX - this.pos.moveX) > 10) {
 					e.preventDefault();
 				}
 			},
